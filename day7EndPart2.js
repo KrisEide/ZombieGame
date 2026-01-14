@@ -1,4 +1,4 @@
-/// <reference path="ZombieGame.html"/>
+/// <reference path="index.html"/>
 let kills = 1;
 
 async function safeRoute() {

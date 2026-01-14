@@ -1,6 +1,6 @@
 "use strict";
 
-/// <reference path="ZombieGame.html"/>
+/// <reference path="index.html"/>
 
 let day7DeathMessage = null;
 let day7DeathImage = null;
