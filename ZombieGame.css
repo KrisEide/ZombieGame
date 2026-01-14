@@ -1,0 +1,316 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.KE {
+  margin-top: 30px;
+  font-size: small;
+}
+
+/* ---------------------------------------- */
+/* --------------------game-menu----------------- */
+
+#game-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#game-menu #imageContainer {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#game-menu img {
+  width: 1000px;
+}
+
+/* Teksten inne i bilde. */
+#startGameText {
+  position: absolute;
+  width: 600px;
+  font-size: 1.9rem;
+  line-height: 1.6;
+  z-index: 2;
+  padding: 2rem;
+  font-family: Georgia, serif; /* elegant og skarp */
+  color: rgb(30, 20, 10); /* mørk blekkfarge – ikke kullsvart */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+#starttext-continue-button {
+  width: 150px;
+  height: 40px;
+  position: absolute;
+  background-color: darkred;
+  color: white;
+  font-size: 1.9rem;
+  padding: 20px;
+  align-self: flex-end;
+  margin-bottom: 60px;
+  margin-left: 300px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.startGameButtonText {
+}
+
+#starttext-continue-button:active {
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 5px rbga(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------- */
+/* -------------------really start game--------------- */
+
+#startGame {
+  display: flex;
+
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #3b3b3b;
+  box-sizing: border-box;
+
+  height: 100vh;
+  align-items: stretch; /* ny */
+}
+
+.box-storyText h2 {
+  color: #eec179;
+  margin-bottom: 1rem;
+  align-self: center;
+  font-size: 39px;
+}
+
+@keyframes dayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.box-storyText h2.animate-day {
+  animation: dayFade 12s ease-out forwards;
+}
+
+#storyText {
+  flex-grow: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* ---------------- */
+  height: 100%;
+  white-space: pre-wrap;
+  color: #ffdead;
+  font-size: 22px;
+  line-height: 1.6;
+
+  padding-right: 1rem; /* NY plass mellom tekst og scrollbar */
+  padding-left: 0.5rem; /* NY jevn marg */
+  max-height: 60vh; /* NY aldri mer enn 70% av skjermen høyde 75vh ---- er satt som standar.*/
+}
+
+.box-storyText {
+  background-color: #4b1818;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  height: auto;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: linear-gradient(#7a2222, #3e0101);
+
+  order: 2; /* ny */
+  align-self: center; /* ny */
+  align-self: stretch; /* ny*/
+
+  flex: 0 1 475px; /* ny. tidligere 400px, gir mer plass */
+  max-width: 600px; /* ny. stopper den fra å bli for bred */
+}
+
+.box-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  max-width: 400px;
+  overflow-y: auto;
+  align-self: stretch; /* ny*/
+}
+
+.box-choices button {
+  flex: 1 1 50%;
+  padding: 1rem;
+  font-size: 2rem;
+  background-color: #4b1818;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background: linear-gradient(#7a2222, #3e0303);
+}
+
+.box-choices button img {
+  object-fit: contain;
+  width: 100px;
+  height: 100px;
+}
+
+.gun,
+.knife,
+.mag,
+.aid,
+.inv {
+  max-width: 100px;
+}
+
+.box-choices button:hover {
+  background: linear-gradient(#ba3535, #800606);
+}
+
+button:hover img {
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+}
+
+.box-choices button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.9) inset;
+  transition: all 0.1 ease, box-shadow 0.2 ease;
+}
+
+/* ---------------- BILDER --------------------- */
+
+.box-right-picture {
+  flex: 8;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  order: 3; /* ny */
+  align-self: stretch; /* ny*/
+  min-height: 0; /* ny*/
+}
+
+.box-right-picture img.mainPicture {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+
+  border: 4px solid #222;
+  border-radius: 8px;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.7);
+  background-color: #000;
+}
+
+.box-right-picture img {
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+/* bilder knapper */
+.image-choice-button {
+  cursor: pointer;
+  background: linear-gradient(
+    180deg,
+    #353535,
+    #262626
+  ); /* bakgrunnsfarge på valg knappene */
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.image-choice-button img {
+  width: 400px;
+  height: auto;
+  border: 2px solid #444;
+  border-radius: 8px;
+  margin: 7px;
+  transition: transform 0.3s ease;
+}
+
+.image-choice-button:hover {
+  transform: translateY(-2px);
+}
+
+.image-choice-button:hover img {
+  transform: scale(1.05);
+}
+
+#pictureChoiceContainer.choice-active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 30px;
+  justify-items: center;
+  align-items: center;
+  overflow-y: auto; /* NY */
+  grid-template-columns: repeat(2, minmax(280px, 1fr)); /* to kolonner */
+}
+
+#pictureChoiceContainer.choice-active .image-choice-button:first-child {
+  grid-column: 1 / span 2;
+  justify-self: center;
+}
+
+#pictureChoiceContainer.choice-active .image-choice-button img {
+  width: 100%;
+  height: auto;
+  max-height: 38vh; /* gjør bildene litt mindre i denne visningen */
+  object-fit: contain;
+  margin: 0;
+}
+
+.glow {
+  animation: glowPulse 2.5s infinite;
+}
+
+@keyframes glowPulse {
+  0% {
+    filter: drop-shadow(0 0 2px orange) drop-shadow(0 0 5px red);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px orange) drop-shadow(0 0 15px red);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px orange) drop-shadow(0 0 5px red);
+  }
+}
+
+.hp-bar {
+  height: 15px;
+  background: darkred; /* bakgrunn (tom del av hp) */
+  border: 1px solid black;
+}
+
+.hp-bar .fill {
+  height: 100%;
+  transition: width 250ms ease; /* myk bevegelse */
+  background: linear-gradient(90deg, #eec179, #b98235);
+}
+
+#zombieHpBar .fill {
+  background: linear-gradient(90deg, #8b9a88, #586656);
+}
+
+#healthbars {
+  padding-top: 50px;
+}

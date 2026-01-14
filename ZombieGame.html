@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="ZombieGame.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZombieSurvival</title>
+    <link rel="icon" href="Bilder/GUNNNss.png" />
+  </head>
+  <body>
+    <div id="game-menu">
+      <div id="imageContainer">
+        <img src="bilder/Gammelt papir.webp" alt="Bakgrunnsbilde" />
+        <div id="startGameText">
+          Det har gått over ett år siden alt kollapset. Byene er tomme, zombiene
+          vandrer i gatene. Du har overlevd i stillhet, men nå er maten borte -
+          og de kommer nærmere. Om 7 dager skal et helikopter lete etter
+          overlevende. Dette er din siste sjanse. Du har: en pistol med 6 skudd,
+          et førstehjelpsskrin og en rusten kniv.
+          <p class="KE">Spill laget av: Kristoffer Eide.</p>
+        </div>
+
+        <div id="starttext-continue-button">
+          <p class="startGameButtonText">Start spill</p>
+        </div>
+      </div>
+    </div>
+    <div id="startGame" style="display: none">
+      <div class="box-storyText">
+        <h2 id="whatDay" class="top-text-days">|| Dag 1 ||</h2>
+        <div id="storyText" class="story-boxScroll"></div>
+
+        <!-- HEALTHBAR START -->
+
+        <div id="healthbars">
+          <p>Din HP:</p>
+          <div id="playerHpBar" class="hp-bar">
+            <div class="fill"></div>
+          </div>
+
+          <p>Zombie HP:</p>
+          <div id="zombieHpBar" class="hp-bar">
+            <div class="fill"></div>
+          </div>
+
+          <!-- HEALTHBAR END -->
+        </div>
+      </div>
+      <div class="box-choices">
+        <button
+          title="Skyt zombien fra avstand"
+          id="shoot"
+          onclick="choose('shoot')"
+        >
+          <img id="rangedWeaponIcon" src="Bilder/GUNNNss.png" class="gun" />
+        </button>
+
+        <!-- knife og fistfight -->
+        <button title="Nærkamp" id="useKnife" onclick="choose('knifeAttack')">
+          <img id="weaponIcon" src="Bilder/Knifee.png" class="knife" />
+        </button>
+
+        <button title="Lad om pistolen" id="reload" onclick="choose('reload')">
+          <img src="Bilder/magazinee.png" class="mag" />
+        </button>
+        <button
+          title="bruk førstehjelpsskrin(+5HP)"
+          id="useFirstAid"
+          onclick="choose('firstAid')"
+        >
+          <img src="Bilder/FirstAid.png" class="aid" />
+        </button>
+        <button
+          title="inventory + status"
+          id="checkInventory"
+          onclick="choose('inventory')"
+        >
+          <img src="Bilder/invvv.png" class="inv" />
+        </button>
+      </div>
+      <div class="box-right-picture" id="pictureChoiceContainer">
+        <img
+          id="gameImage"
+          src="Bilder/zombie1.png"
+          alt="Bakgrunnsbilde"
+          class="mainPicture"
+        />
+      </div>
+    </div>
+  </body>
+  <script src="gasStation.js"></script>
+  <script src="officeBuilding.js"></script>
+  <script src="policeStation.js"></script>
+  <script src="day7EndPart2.js"></script>
+  <script src="day7End.js"></script>
+
+  <script>
+    document
+      .getElementById("starttext-continue-button")
+      .addEventListener("click", function () {
+        document.getElementById("imageContainer").style.display = "none";
+
+        document.getElementById("startGame").style.display = "flex";
+        document.getElementById("game-menu").style.display = "none";
+      });
+
+    /* --------------------------------------------------------- */
+
+    const story = document.getElementById("storyText");
+    const day = document.getElementById("whatDay");
+    const gameImg = document.getElementById("gameImage");
+
+    let isItGameOver = false;
+    let afterZombieDeathHandler = null;
+    let currentEncounterLocation = null;
+    let combatEnabled = true;
+    let knifeGoneWarning = false;
+    let knifeInstakillTriggered = false;
+    let hasFlameThrower = false;
+    let dag = 1;
+
+    story.innerText = "Det kommer en zombie mot deg i det fjerne, hva gjør du?";
+
+    // start spillet med 6 ammo, 1 first aid og en kniv: veldig vanskelig, nesten umulig.
+
+    let player = {
+      _hp: 10,
+      maxHp: 10,
+      set hp(value) {
+        this._hp = Math.max(0, Math.min(this.maxHp, value));
+        updateHpBars();
+      },
+      get hp() {
+        return this._hp;
+      },
+
+      maxHp: 10,
+      ammoPistol: 6,
+      ammoSekk: 4,
+      maxAmmo: 4,
+      førstehjelpsskrin: 1,
+      knifeUses: 10,
+      hasKnife: true,
+      extraKnives: [],
+      hasShotGun: false,
+      ammoShotGun: 0,
+      shotGunAmmoSekk: 10,
+      maxAmmoShotGun: 2,
+    };
+
+    let zombie = {
+      _hp: 10,
+      maxHp: 10,
+      set hp(value) {
+        // Ny zombie? (typisk: gammel var 0, nå setter du f.eks. 8 eller 10)
+
+        if (this._hp == null || value > this._hp) {
+          this.maxHp = value;
+        }
+        this._hp = Math.max(0, Math.min(this.maxHp, value));
+        updateHpBars();
+      },
+      get hp() {
+        return this._hp;
+      },
+    };
+
+    function updateHpBars() {
+      document.querySelector("#playerHpBar .fill").style.width =
+        (player.hp / player.maxHp) * 100 + "%";
+
+      document.querySelector("#zombieHpBar .fill").style.width =
+        (zombie.hp / zombie.maxHp) * 100 + "%";
+    }
+
+    // ---------- TIMER FOR TEKST ----------
+
+    function tid(sekunder) {
+      return new Promise((resolve) => setTimeout(resolve, sekunder * 1000));
+    }
+
+    /* ----------------------------------------------------------------- */
+
+    async function nesteDag() {
+      if (isItGameOver) return;
+      dag++;
+
+      //---- DAG 1.
+      if (dag === 1) {
+        day.innerText = "|| Dag 1 ||";
+        story.innerText =
+          "Det kommer en zombie mot deg i det fjerne, hva gjør du?";
+      }
+      //---- DAG 2.
+      if (dag === 2) {
+        zombie.hp = 10;
+        day.innerText = "|| Dag 2 ||";
+        animateDayChange();
+        disableCombatButtons();
+
+        // await fastRoute();
+        // hasFlameThrower = true; //------------------------------ TEST
+
+        // updateRangedCombatIconFlamethrower(); //------------------------------ TEST
+
+        // await useFlamethrowerFinale(); //------------------------------ TEST
+
+        await tid(4);
+        story.innerText =
+          "\nDu vandrer rundt i byen, ikke langt unna campen din.";
+        await tid(5);
+        setGameImage("Bilder/zombiex2.png");
+        story.innerText += "\nEn zombie kommer mot deg.";
+        await tid(1);
+        story.innerText += "\nHva gjør du?";
+        enableCombatButtons();
+
+        //---- DAG 3 ---- Første dag med supplyRun.
+      }
+      if (dag === 3) {
+        day.innerText = "|| Dag 3 ||";
+        animateDayChange();
+        await tid(4);
+        supplyRun();
+
+        //---- DAG 4.
+      }
+      if (dag === 4) {
+        zombie.hp = 8;
+        disableCombatButtons();
+        day.innerText = "|| Dag 4 ||";
+        setGameImage("Bilder/dag4.png");
+        story.innerText = "\nDenne dagen tar du turen til en elv i nærheten.";
+        await tid(3);
+        story.innerText += "\nFor nå er det stille her.";
+        await tid(3);
+        story.innerText += "\nFint sted for å tenke å slappe av.";
+        await tid(3);
+        story.innerText +=
+          "\n3 dager igjen til helikoptere skal komme, jeg må være klar.";
+        await tid(3);
+        story.innerText +=
+          "\nStillheten ved elven blir brutt av en gurglende lyd.";
+        await tid(3);
+        story.innerText += "\nDu blir dratt tilbake til virkeligheten.";
+        await tid(3);
+        animateDayChange();
+        setGameImage("Bilder/zombie7.png");
+        story.innerText +=
+          "\nDu sukker, reiser deg opp og gjør deg klar til kamp.";
+        await tid(2);
+        story.innerText += "\nHva gjør du?";
+        enableCombatButtons();
+
+        //---- DAG 5. Neste dag med supplyRun.
+      }
+      if (dag === 5) {
+        day.innerText = "|| Dag 5 ||";
+        animateDayChange();
+        supplyRun();
+
+        //---- DAG 6.
+      }
+      if (dag === 6) {
+        disableCombatButtons();
+        zombie.hp = 10;
+        day.innerText = "|| Dag 6 ||";
+        animateDayChange();
+        story.innerText = "\nI dag er du oppe ved en bru.";
+        setGameImage("Bilder/dag6x.png");
+        await tid(5);
+        story.innerText +=
+          "\nKanskje dette er et bra sted å se etter helikopteret som kommer i morgen?";
+        await tid(7);
+        story.innerText += "\nDu får snart dratt bort her ifra.";
+        await tid(4);
+        setGameImage("Bilder/dag6.png");
+        story.innerText += "\nDu ser en zombie.";
+        await tid(2);
+        story.innerText += "\nHva gjør du?";
+        enableCombatButtons();
+        //---- DAG 7. Siste dag.
+      }
+      if (dag === 7) {
+        day7TheEnd();
+      }
+      if (dag === 8) {
+        day7TheEndChapter2();
+      }
+    }
+
+    function animateDayChange() {
+      day.classList.add("animate-day");
+      day.addEventListener("animationend", function handler() {
+        day.classList.remove("animate-day");
+        day.removeEventListener("animationend", handler);
+      });
+    }
+
+    /* --------------------------------------------------------- */
+    /* --------------------------------------------------------- */
+
+    let ventPåSkuddResolver = null;
+
+    function enableOnlyShootButton() {
+      disableButtons();
+      const shootBtn = document.getElementById("shoot");
+      if (shootBtn) shootBtn.disabled = false; // bare SHOOT aktiv
+    }
+
+    function ventPåAktivering() {
+      enableOnlyShootButton();
+      return new Promise((resolve) => {
+        ventPåSkuddResolver = resolve;
+      });
+    }
+
+    /* --------------------------------------------------------- */
+    /* --------------------------------------------------------- */
+
+    function updateCloseCombatIcon() {
+      const weaponIcon = document.getElementById("weaponIcon");
+      if (!weaponIcon) return;
+
+      if (!player.hasKnife) {
+        weaponIcon.src = "bilder/fist.png";
+        weaponIcon.alt = "knyttneve";
+      } else {
+        weaponIcon.src = "bilder/knifee.png";
+        weaponIcon.alt = "kniv";
+      }
+    }
+
+    function updateRangedCombatIconFlamethrower() {
+      const rangedIcon = document.getElementById("rangedWeaponIcon");
+
+      hasFlameThrower = true;
+
+      if (hasFlameThrower) {
+        rangedIcon.src = "Bilder/Flamethrower.png";
+        rangedIcon.title = "Flamethrower";
+        rangedIcon.classList.add("glow");
+      }
+    }
+
+    function updateRangedCombatIconShotgun() {
+      const rangedIcon = document.getElementById("rangedWeaponIcon");
+      player.hasShotGun = true;
+
+      if (player.hasShotGun) {
+        rangedIcon.src = "Bilder/shotgun.png";
+        rangedIcon.title = "Double-barrel shotgun";
+        rangedIcon.classList.add("glow");
+      }
+    }
+
+    function pickUpNewKnife() {
+      const newKnife = Math.floor(Math.random() * 5) + 6;
+
+      if (!player.hasKnife) {
+        player.hasKnife = true;
+        player.knifeUses = newKnife;
+        knifeGoneWarning = false;
+        story.innerText += "\nDu tar kniven i hånden.";
+        updateCloseCombatIcon();
+      } else {
+        player.extraKnives.push(newKnife);
+        story.innerText += "\n\nDu legger den i sekken.";
+      }
+    }
+
+    function disableButtons() {
+      document
+        .querySelectorAll(".box-choices button")
+        .forEach((btn) => (btn.disabled = true));
+    }
+
+    function enableButtons() {
+      document
+        .querySelectorAll(".box-choices button")
+        .forEach((btn) => (btn.disabled = false));
+    }
+
+    function waitBeforeButtonActivates(delay = 2000, ekstraTekst = "") {
+      setTimeout(() => {
+        if (ekstraTekst) {
+          story.innerText += `\n${ekstraTekst}`;
+        }
+        enableButtons();
+      }, delay);
+    }
+
+    /* --------------------------------------------------------- */
+
+    function choose(action) {
+      if (ventPåSkuddResolver) {
+        if (action === "shoot") {
+          const r = ventPåSkuddResolver;
+          ventPåSkuddResolver = null;
+          disableButtons(); // lås input idet spilleren skyter
+          r(); // fortsett finalen
+        } else {
+          story.innerText += "\nBare skyt nå.";
+        }
+        return; // blokker alt annet
+      }
+
+      if (!combatEnabled) {
+        console.log("Combat er deaktivert, ignorerer handling:", action);
+        return;
+      }
+
+      switch (action) {
+        case "shoot":
+          shootZombie();
+          break;
+        case "knifeAttack":
+          if (player.hasShotGun || hasFlameThrower === true) {
+            story.innerText += "\n\nDu har kastet fra deg kniven.";
+            break;
+          }
+          knifeAttack();
+          break;
+        case "reload":
+          reload();
+          break;
+        case "firstAid":
+          useFirstAid();
+          break;
+        case "inventory":
+          showPlayerStatusPlus();
+          break;
+        default:
+          story.innerText = "ukjent handlling. Prøv på nytt.";
+      }
+    }
+
+    /* ---------------------------------------------------------
+         ---------------------- COMBAT --------------------------- */
+
+    //---------------------------------
+    //skyteknappen
+    //---------------------------------
+
+    async function shootZombie() {
+      disableButtons();
+
+      if (player.hasShotGun) {
+        shootZombieShotgun();
+        return;
+      }
+
+      // if (hasFlameThrower === true) {
+      //   useFlamethrowerFinale();
+      //   return;
+      // }
+
+      if (player.ammoPistol <= 0) {
+        story.innerText += "\nDu er tom for ammo.";
+
+        await tid(1);
+        story.innerText += "\n(Velg igjen)";
+        enableButtons();
+        return;
+      }
+
+      let headShotChance = 2;
+      let critChance = 18;
+      let missChance = 17;
+
+      let headShotCalculated = headShotChance;
+      let critCalculated = headShotCalculated + critChance;
+      let missCalcuated = critCalculated + missChance;
+
+      // 2-4 damage med 7% instacill sjanse, dobbel damage på 15% sjanse og 20% sjanse til å misse.
+
+      let roll = Math.floor(Math.random() * 100);
+      let normalDamage = Math.floor(Math.random() * 3) + 2;
+
+      if (roll < headShotCalculated) {
+        story.innerText += "\n\nHeadshot! Du treffer zombien rett i hode.";
+        zombie.hp = 0;
+      } else if (roll < critCalculated) {
+        const criticalDamage = normalDamage * 2;
+        story.innerText += `\n\nCritical hit! Du gjør ${criticalDamage} skade.`;
+        zombie.hp -= criticalDamage;
+        zombieZero();
+        await tid(2);
+        story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
+      } else if (roll < missCalcuated) {
+        await zombieAttacksBackMissGun();
+      } else {
+        story.innerText += `\n\nDu skyter og gjør ${normalDamage} skade på zombien.`;
+        zombie.hp -= normalDamage;
+        zombieZero();
+        await tid(2);
+        story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
+      }
+
+      player.ammoPistol--;
+      checkZombieDeath();
+      if (zombie.hp <= 0) {
+        disableButtons();
+      } else {
+        await tid(2);
+
+        story.innerText += "\n\n(Velg igjen)";
+
+        enableButtons();
+      }
+    }
+
+    const shotgunHitText = [
+      "Du fyrer av, og zombiens brystkasse revner i en sky av blod.",
+      // ------------------------------------------
+      "Haglen river zombien i filler - den er ferdig.",
+      // ------------------------------------------
+      "Zombien slenges i bakken, kroppen livløs etter det brutale treffet.",
+      // ------------------------------------------
+      "Med et øredøvende brak blåser du zombien bort som om den aldri eksisterte.",
+      // ------------------------------------------
+      "Hagleløpet braker løs, og zombien faller sammen uten et eneste skrik.",
+      // ------------------------------------------
+      "Du klemmer av et skudd, og zombien kollapser i en blodig masse.",
+      // ------------------------------------------
+      "Det tunge skuddet river gjennom kjøttet - zombien blir liggende urørlig.",
+      // ------------------------------------------
+      "Skuddet treffer med slik kraft at zombien kastes flere meter bakover.",
+      // ------------------------------------------
+      "Hodet forsvinner i en sky av røyk og blod, kroppen står igjen et øyeblikk før den kollapser.",
+      // ------------------------------------------
+      "Skuddet river bort halve kroppen, resten faller uten liv.",
+      // ------------------------------------------
+      "Skuddet river bort alt fra skuldrene og opp - kroppen faller rett ned.",
+      // ------------------------------------------
+      "Zombien slenges inn i bakken med et knas da haglskuren river den i stykker.",
+      // ------------------------------------------
+      "Skuddet river ut innvollene, og zombien faller sammen i en blodpøl.",
+    ];
+
+    function getRandomShotgunHitText() {
+      const index = Math.floor(Math.random() * shotgunHitText.length);
+      return shotgunHitText[index];
+    }
+
+    // Shotgun-skyting
+    async function shootZombieShotgun() {
+      // Plukk tilfeldig setning
+      const hitText = getRandomShotgunHitText();
+
+      if (player.ammoShotGun <= 0) {
+        story.innerText += "\nDu er tom for ammo.";
+
+        await tid(1);
+        story.innerText += "\n(Velg igjen)";
+        enableButtons();
+        return;
+      }
+
+      story.innerText += "\n\nBOOM!";
+      story.innerText += "\n" + hitText;
+      player.ammoShotGun--;
+
+      zombie.hp = 0;
+      checkZombieDeath();
+    }
+
+    //------------------------------------
+    //kniv knappen
+    //-----------------------------------
+
+    async function knifeAttack() {
+      disableButtons();
+
+      if (!player.hasKnife) {
+        if (!knifeGoneWarning) {
+          story.innerText += "\n\nDu strammer knyttnevene. Det er alt du har.";
+          updateCloseCombatIcon();
+          knifeGoneWarning = true;
+          await tid(2);
+        }
+        fistFight();
+        return;
+      }
+
+      // 1-4 damage med 8% sjanse for instakill men med broken knife
+      let knifeNormalDamage = Math.floor(Math.random() * 4) + 1;
+      let instaKillChance = Math.floor(Math.random() * 100);
+
+      //headshot/critical hit med kniven
+      if (zombie.hp <= 10 && instaKillChance < 7) {
+        knifeInstakillTriggered = true;
+        story.innerText +=
+          "\n\nI nærkampens kaos finner du en åpning og planter kniven rett i hodet på zombien.";
+        zombie.hp = 0;
+        await tid(5);
+        player.knifeUses -= 3;
+        if (player.knifeUses > 0) {
+          story.innerText +=
+            "\n\nDu drar ut kniven fra skallen på zombien,  bladet er bøyd og fullt av hakk.";
+          await tid(4);
+          story.innerText += "\n\nDen funker enda, men du bør se etter en ny.";
+          await tid(4);
+        } else if (player.knifeUses <= 0) {
+          story.innerText += "\n\nMen kniven brekker i støtet..";
+          await tid(4);
+          if (player.extraKnives.length > 0) {
+            const nextKnife = player.extraKnives.shift();
+            player.knifeUses = nextKnife;
+            player.hasKnife = true;
+            await tid(3);
+            story.innerText +=
+              "\nDu har en ekstra kniv i sekken,\n du tar den frem.";
+            knifeGoneWarning = false;
+            updateCloseCombatIcon();
+          } else {
+            player.hasKnife = false;
+            story.innerText += "\nDet var din siste kniv.";
+          }
+        }
+
+        updateCloseCombatIcon();
+
+        checkZombieDeath();
+        return;
+      }
+
+      zombie.hp -= knifeNormalDamage;
+      zombieZero();
+      player.knifeUses--;
+
+      story.innerText += `\n\nDu angriper med kniven og gjør ${knifeNormalDamage} skade.`;
+      await tid(2);
+
+      const zombieDød = zombie.hp <= 0;
+
+      if (player.knifeUses <= 0) {
+        story.innerText += "\n\nKniven din knekker!";
+        await tid(2);
+        player.hasKnife = false;
+        if (player.extraKnives.length > 0) {
+          player.hasKnife = true;
+          const nextKnife2 = player.extraKnives.shift();
+          player.knifeUses = nextKnife2;
+          story.innerText +=
+            "\nDu har en ekstra kniv i sekken, du tar den frem.";
+          knifeGoneWarning = false;
+        } else {
+          player.hasKnife = false;
+          story.innerText += "\nDu har ingen kniver igjen.";
+          await tid(3);
+        }
+
+        updateCloseCombatIcon();
+      }
+
+      if (zombieDød) {
+        checkZombieDeath();
+        return;
+      }
+
+      zombieAttacksBackKnife();
+      await tid(3);
+      story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
+
+      if (zombie.hp > 0 && player.hp > 0) {
+        await tid(2);
+        story.innerText += "\n(Velg igjen)";
+        enableButtons();
+      }
+
+      if (player.hp <= 0) {
+        gameOver("GAME OVER.");
+        return;
+      }
+    }
+
+    //------------------------------------
+    //Knyttneve kamp
+    //-----------------------------------
+
+    async function fistFight() {
+      disableButtons();
+
+      // gjør 1-3 damage med 15% sjanse for instakill
+      const fistDamage = Math.floor(Math.random() * 3) + 1;
+      const slamChance = Math.floor(Math.random() * 100);
+
+      if (zombie.hp <= 10 && slamChance < 15) {
+        story.innerText +=
+          "\n\nDu får tak i zombien og knuser hode hardt i bakken!";
+        zombie.hp = 0;
+        checkZombieDeath();
+        return;
+      }
+
+      zombie.hp -= fistDamage;
+      zombieZero();
+
+      story.innerText += `\n\nNevene gjør ${fistDamage} skade.`;
+      await tid(2);
+
+      if (zombie.hp <= 0) {
+        checkZombieDeath();
+        return;
+      }
+      await zombieAttacksBackFistFight();
+    }
+
+    async function zombieAttacksBackFistFight() {
+      //Zombien Gjør 1-3
+
+      const roll = Math.random() * 100;
+      let counterDamage;
+
+      if (roll < 94) {
+        // 84% sjanse: 1–3 skade
+        counterDamage = Math.floor(Math.random() * 3) + 1;
+      } else {
+        // 10% sjanse: 3 skade
+        counterDamage = 4;
+      }
+
+      player.hp -= counterDamage;
+
+      await tid(2);
+      story.innerText += `\nZombien slår tilbake! Du mister ${counterDamage} liv.`;
+      await tid(2);
+      story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
+      await tid(2);
+      story.innerText += `\nDu har ${player.hp} liv igjen.`;
+
+      if (player.hp <= 0) {
+        gameOver("GAME OVER.");
+        return;
+      }
+
+      await tid(2);
+      story.innerText += "\n\n(Velg igjen)";
+      enableButtons();
+    }
+
+    //zombien angriper tilbake
+    async function zombieAttacksBackKnife() {
+      //Bruker du knif gjør zombien fra 0-2 damage tilbake ingen sjanse til å instakille deg.
+
+      const roll = Math.random() * 100;
+      let counterDamageKnife;
+
+      if (roll < 20) {
+        // 20% sjanse: dodged
+        counterDamageKnife = 0;
+      } else if (roll < 90) {
+        // 80% sjanse: 1–2 skade
+        counterDamageKnife = Math.floor(Math.random() * 2) + 1;
+      } else {
+        // 10% sjanse: 3 skade
+        counterDamageKnife = 3;
+      }
+
+      player.hp -= counterDamageKnife;
+      if (player.hp < 0) player.hp = 0;
+
+      if (counterDamageKnife === 0) {
+        story.innerText += "\nZombien prøver å slå tilbake, men du unngår det.";
+      } else {
+        story.innerText += `\nZombien slår tilbake og du mister ${counterDamageKnife} liv.`;
+        await tid(2);
+        story.innerText += `\nDu har ${player.hp} liv igjen.`;
+        await tid(2);
+        if (player.hp <= 0) {
+          story.innerText += "\n\nUtslitt blir du spist av zombien.";
+          await tid(2);
+          gameOver("GAME OVER");
+        }
+      }
+    }
+
+    const damageFromMissText = [
+      "Zombien utnytter åpningen og skraper deg med skitne klør.",
+      // ----------------------
+      "Zombien rekker deg og river opp huden med et raskt kutt.",
+      // ----------------------
+      "Zombien får inn et slag som får deg til å vakle.",
+      // ----------------------
+      "Zombien skraper deg før du rekker å trekke deg unna.",
+      // ----------------------
+      "Zombien får tak i deg og etterlater et grunt sår.",
+      // ----------------------
+      "Zombien griper deg og lager et lite, men smertefullt kutt.",
+      // ----------------------
+      "Zombien slår deg med et klossete, tungt slag.",
+      // ----------------------
+      "Zombien klorer deg.",
+      // ----------------------
+      "Zombien griper etter deg, men rekker bare å rive litt i huden.",
+      // ----------------------
+      "Zombien får tak i jakka di og skraper deg gjennom stoffet.",
+      // ----------------------
+      "Zombien hakker til med hodet og treffer deg i ansiktet.",
+    ];
+
+    //Du bommer med pistolen og zombien slår deg
+    async function zombieAttacksBackMissGun() {
+      let randomText =
+        damageFromMissText[
+          Math.floor(Math.random() * damageFromMissText.length)
+        ];
+
+      story.innerText += "\n\nDu skyter og bommer.";
+      await tid(3);
+      story.innerText += `\n\n${randomText}`;
+      await tid(3);
+      story.innerText += `\nDu mister 1 liv.`;
+      await tid(2);
+      player.hp -= 1;
+      story.innerText += `\nDu har ${player.hp} liv igjen.`;
+      await tid(2);
+
+      if (player.hp <= 0) {
+        gameOver("GAME OVER.");
+        return;
+      }
+      story.innerText += "\nDu dytter den unna og trekker deg tilbake.";
+      await tid(1);
+    }
+
+    //Spillet kan ikke progresse uten at zombien er død.
+    async function checkZombieDeath() {
+      if (isItGameOver) return;
+
+      if (zombie.hp <= 0 && player.hp > 0) {
+        if (knifeInstakillTriggered === true) {
+          knifeInstakillTriggered = false;
+        } else if (!player.hasShotGun) {
+          await tid(2);
+          story.innerText += "\nZombien er død!";
+        }
+
+        if (player.hasShotGun) {
+          await tid(5);
+          story.innerText += "\nZombien har 0 liv igjen. Duh.";
+          await tid(2);
+        }
+
+        if (afterZombieDeathHandler) {
+          const handler = afterZombieDeathHandler;
+          afterZombieDeathHandler = null; // én-gangs
+          handler(); // lar encounter-funksjonen fortsette sin flyt
+          return;
+        }
+
+        // Hvis du var på en supply-run-lokasjon uten callback: avslutt encounter
+        if (
+          currentEncounterLocation === "gasStation" ||
+          currentEncounterLocation === "officeBuilding" ||
+          currentEncounterLocation === "policeStation"
+        ) {
+          currentEncounterLocation = null;
+          return;
+        }
+
+        await tid(4);
+
+        story.innerText +=
+          "\n\nDu trekker pusten, resten av dagen er rolig, ingen flere zombier.";
+        await tid(5);
+        nesteDag();
+        enableButtons();
+      }
+    }
+
+    //Så det ikke står at zombien har -3 hp f.eks.
+    function zombieZero() {
+      if (zombie.hp < 0) {
+        zombie.hp = 0;
+      }
+    }
+
+    function gameOver(deathMessage = "") {
+      const gameImg = document.getElementById("gameImage");
+      if (isItGameOver) return;
+      isItGameOver = true;
+      disableButtons(); //stopper alle knappene siden spiller har tapt.
+      story.innerText += `\n\n${deathMessage}`;
+
+      if (day7DeathMessage) {
+        story.innerText += `\n\n${deathMessage}`;
+        day7DeathMessage = null;
+      }
+
+      //bytter til GAME OVER-bilde
+      if (gameImg) {
+        if (day7DeathImage) {
+          gameImg.src = day7DeathImage;
+          day7DeathImage = null; // reset
+        } else {
+          gameImg.src = "Bilder/GAME_OVER.png";
+        }
+      }
+    }
+
+    /* ---------------------------------------------------------
+         ---------------------------------------------------------
+         --------------------- UTILITY --------------------------- */
+
+    //vis info om HP på spiller og zombie.
+    function showPlayerStatus() {
+      return `HP: ${player.hp}
+                Ammo: ${player.ammoPistol}`;
+    }
+
+    //Sekk knappen
+    function showPlayerStatusPlus() {
+      disableButtons();
+
+      let knifeStatus = "Du har ingen kniv.";
+
+      if (player.hasKnife) {
+        if (player.knifeUses >= 7) {
+          knifeStatus = " Kniven er skarp og klar.";
+        } else if (player.knifeUses >= 4) {
+          knifeStatus = " Kniven er slitt.";
+        } else if (player.knifeUses >= 1) {
+          knifeStatus = " Kniven er nær ved å brekke.";
+        } else {
+          knifeStatus = " Kniven er ubrukelig.";
+        }
+      }
+
+      story.innerText += `\n
+          Ammo i pistolen: ${player.ammoPistol}
+          Ammo i sekken: ${player.ammoSekk}
+          Førstehjelpsskrin: ${player.førstehjelpsskrin}
+          Din HP: ${player.hp}
+          Knivs tilstand:${knifeStatus}`;
+      if (player.extraKnives.length > 0) {
+        story.innerText += `\nReserve kniver i sekken: ${player.extraKnives.length}`;
+      }
+
+      waitBeforeButtonActivates(2000, "(velg igjen)");
+    }
+
+    //First Aid knappen
+
+    function useFirstAid() {
+      disableButtons();
+
+      if (player.førstehjelpsskrin <= 0) {
+        story.innerText += "\nDu er tomt for førstehjelpskrin.";
+      } else if (player.hp < 10 && player.hp > 0) {
+        player.førstehjelpsskrin--;
+        player.hp += 5;
+
+        if (player.hp > 10) {
+          player.hp = player.maxHp;
+        }
+        story.innerText += `\n\nDu bruker et førstehjelpsskrin. Din HP er nå ${player.hp}.`;
+      } else {
+        story.innerText += "\n\nDu trenger ikke førsthelp nå.";
+      }
+      waitBeforeButtonActivates(3000, "\n(velg igjen)");
+    }
+
+    async function reload() {
+      if (player.hasShotGun) {
+        reloadShotgun();
+        await tid(2);
+        story.innerText += "\n(Velg igjen)";
+        enableButtons();
+        return;
+      }
+
+      if (player.ammoPistol === 10) {
+        story.innerText += "\nMagasine ditt er allerede fullt.";
+        await tid(1);
+        story.innerText += "\n\n(Velg igjen)";
+        enableButtons();
+        return;
+      }
+      if (player.ammoSekk === 0) {
+        story.innerText += "\nDu har ikke noe ammo i sekken.";
+        await tid(1);
+        story.innerText += "\n\n(Velg igjen)";
+        enableButtons();
+        return;
+      }
+
+      const spaceInMag = player.maxAmmo - player.ammoPistol;
+      const ammoToLoad = Math.min(5, spaceInMag, player.ammoSekk);
+
+      player.ammoPistol += ammoToLoad;
+      player.ammoSekk -= ammoToLoad;
+
+      story.innerText += `\n\nDu lader pistolen med ${ammoToLoad} skudd.`;
+      story.innerText += `\nAmmo i pistolen: ${player.ammoPistol}.\nAmmo i sekken: ${player.ammoSekk}.`;
+
+      if (player.ammoPistol > 10) {
+        player.ammoPistol = player.maxAmmo;
+      }
+
+      await tid(2);
+      story.innerText += "\n\n(Velg igjen)";
+      enableButtons();
+    }
+
+    async function reloadShotgun() {
+      if (player.ammoShotGun === 2) {
+        story.innerText += "\nShotgunnen er allerede ladd.";
+        return;
+      }
+      if (player.shotGunAmmoSekk <= 0) {
+        story.innerText += "\nDu har ikke haglepatroner i sekken.";
+        return;
+      }
+
+      const shellsNeeded = player.maxAmmoShotGun - player.ammoShotGun;
+
+      const shellsToLoad = Math.min(shellsNeeded, player.shotGunAmmoSekk);
+
+      player.ammoShotGun += shellsToLoad;
+      player.shotGunAmmoSekk -= shellsToLoad;
+
+      story.innerText += "\nDu lader shotgunnen.";
+    }
+
+    //----------------------------
+    //------scroll funksjon------
+    //----------------------------
+    const storyBox = document.getElementById("storyText");
+
+    // Husk siste høyde for å unngå unødvendig scrolling
+    let lastHeight = storyBox.scrollHeight;
+
+    setInterval(() => {
+      if (storyBox.scrollHeight !== lastHeight) {
+        storyBox.scrollTop = storyBox.scrollHeight;
+        lastHeight = storyBox.scrollHeight;
+      }
+    }, 200); // Sjekker 5 ganger i sekundet
+  </script>
+</html>
