@@ -181,12 +181,12 @@ async function gasStation() {
         action: gasStationInside,
       },
       {
-        image: "Bilder/bakstasjon.png",
+        image: "Bilder/Bakstasjon.png",
         title: "gå bak bensinstasjonen",
         action: gasStationBehind,
       },
       {
-        image: "Bilder/skogsti.png",
+        image: "Bilder/Skogsti.png",
         title: "Følg en skogsti ved bensinstasjonen",
         action: gasStationForestPath,
       },
