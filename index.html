@@ -493,7 +493,7 @@
         story.innerText += `\n\nDu skyter og gjør ${normalDamage} skade på zombien.`;
         zombie.hp -= normalDamage;
         zombieZero();
-        await tid(2);
+        await tid(1);
         story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
       }
 
@@ -660,7 +660,7 @@
       }
 
       zombieAttacksBackKnife();
-      await tid(3);
+      await tid(2);
       story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
 
       if (zombie.hp > 0 && player.hp > 0) {
@@ -725,9 +725,9 @@
 
       await tid(2);
       story.innerText += `\nZombien slår tilbake! Du mister ${counterDamage} liv.`;
-      await tid(2);
+      await tid(1);
       story.innerText += `\nZombien har ${zombie.hp} liv igjen.`;
-      await tid(2);
+      await tid(1);
       story.innerText += `\nDu har ${player.hp} liv igjen.`;
 
       if (player.hp <= 0) {
@@ -812,10 +812,10 @@
       story.innerText += `\n\n${randomText}`;
       await tid(3);
       story.innerText += `\nDu mister 1 liv.`;
-      await tid(2);
+      await tid(1);
       player.hp -= 1;
       story.innerText += `\nDu har ${player.hp} liv igjen.`;
-      await tid(2);
+      await tid(1);
 
       if (player.hp <= 0) {
         gameOver("GAME OVER.");
