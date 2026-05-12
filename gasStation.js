@@ -18,7 +18,7 @@ function disableCombatButtons() {
     (id) => {
       const btn = document.getElementById(id);
       if (btn) btn.disabled = true;
-    }
+    },
   );
 }
 
@@ -28,7 +28,7 @@ function enableCombatButtons() {
     (id) => {
       const btn = document.getElementById(id);
       if (btn) btn.disabled = false;
-    }
+    },
   );
 }
 
@@ -42,7 +42,7 @@ function supplyRun() {
   if (!visitedSupplyRunPlace.office) {
     choices.push({
       image: "Bilder/office11.png",
-      title: "Et gammelt kontorbygg",
+      title: "Ett gammelt kontorbygg",
       action: () => {
         visitedSupplyRunPlace.office = true;
         officeBuilding();
