@@ -453,13 +453,14 @@ async function forestPathForward() {
 
   story.innerText += "\n\nDet kommer en zombie frem fra teltet.";
   await tid(4);
+  setGameImage("Bilder3/Zombiefromtent.png");
 
   zombie.hp = 10;
   enableCombatButtons();
   story.innerText += "\n\nHva gjør du?";
 
   afterZombieDeathHandler = async () => {
-    story.innerText += "\n\nDu åpner teltene forsiktig og leter.";
+    story.innerText += "\n\nDu ser forsiktig inn i teltene";
     await tid(4);
     // Loot
     const ammoFunnet = 6;

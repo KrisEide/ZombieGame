@@ -1,30 +1,31 @@
 "use strict";
 
 function updateStatusPanel() {
-  const ammoStatus = document.getElementById("ammoStatus");
+  const pistolStatus = document.getElementById("pistolStatus");
+  const bagAmmoStatus = document.getElementById("bagAmmoStatus");
   const firstAidStatus = document.getElementById("firstAidStatus");
   const knifeStatusEl = document.getElementById("knifeStatus");
 
-  if (!ammoStatus || !firstAidStatus || !knifeStatusEl) return;
+  if (!pistolStatus || !bagAmmoStatus || !firstAidStatus || !knifeStatusEl) {
+    return;
+  }
 
-  // Hvis player ikke er laget enda, stopp funksjonen
   try {
     if (!player) return;
   } catch {
     return;
   }
 
-  // Ammo-visning
   if (player.hasShotGun) {
-    ammoStatus.innerText = `Hagle: ${player.ammoShotGun} | Sekk: ${player.shotGunAmmoSekk}`;
+    pistolStatus.innerText = `Hagle: ${player.ammoShotGun}`;
+    bagAmmoStatus.innerText = `Sekk: ${player.shotGunAmmoSekk}`;
   } else {
-    ammoStatus.innerText = `Pistol: ${player.ammoPistol} | Sekk: ${player.ammoSekk}`;
+    pistolStatus.innerText = `Pistol: ${player.ammoPistol}`;
+    bagAmmoStatus.innerText = `Sekk: ${player.ammoSekk}`;
   }
 
-  // Førstehjelp
   firstAidStatus.innerText = `Førstehjelp: ${player.førstehjelpsskrin}`;
 
-  // Knivstatus
   if (!player.hasKnife) {
     knifeStatusEl.innerText = "Kniv: ingen";
   } else if (player.knifeUses >= 7) {
@@ -36,6 +37,4 @@ function updateStatusPanel() {
   }
 }
 
-// Oppdaterer panelet automatisk flere ganger i sekundet.
-// Da slipper du å legge updateStatusPanel() inn overalt i koden.
 setInterval(updateStatusPanel, 200);

@@ -33,7 +33,7 @@ async function safeRoute() {
   setGameImage("Bilder/zombie_sti.png");
   story.innerText +=
     "\n\nEn enslig zombie vakler frem fra skyggene. Blodet renner fra kjeven.";
-  zombie.hp = 14; // 12? 14?
+  zombie.hp = 12; // 12? 14?
   await tid(4);
   enableCombatButtons();
   story.innerText += "\n\nHva gjør du?";
@@ -72,7 +72,7 @@ async function safeRoute() {
     await tid(6);
     story.innerText +=
       "\n\nDen løfter hodet mot deg, øynene matte, klærne dryppende av blod.";
-    zombie.hp = 15; // 15?
+    zombie.hp = 13; // 15?
     await tid(4);
     enableCombatButtons();
     story.innerText += "\n\nHva gjør du?";

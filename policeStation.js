@@ -205,6 +205,11 @@ async function policeStationBasement() {
   await tid(4);
 
   story.innerText +=
+    "\n\nBak en veltet hylle finner du også et førstehjelpsskrin.";
+  player.førstehjelpsskrin += 1;
+  await tid(4);
+
+  story.innerText +=
     "\n\nEn urolig følelse gjør at du ikke vil bli her nede lenger";
   await tid(4);
 

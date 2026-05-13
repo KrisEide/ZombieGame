@@ -47,9 +47,11 @@ async function day7TheEnd() {
 
   await tid(3);
   story.innerText += "\n\nDu griper sekken.";
+  setGameImage("Bilder3/runningintotown.png");
 
   await tid(2);
   story.innerText += "\n\nDu spurter etter lyden.";
+
   await tid(2);
   story.innerText +=
     "\n\nMålet i dag er klart: bli med helikopteret til Safe-Zone.";
@@ -61,7 +63,7 @@ async function day7TheEnd() {
 
   story.innerText += "\n\nDu kommer ikke forbi zombien du må drepe den.";
   await tid(3);
-  zombie.hp = 14;
+  zombie.hp = 12;
   enableCombatButtons();
   story.innerText += "\n\nHva gjør du?";
 
@@ -124,7 +126,7 @@ async function day7TheEnd() {
     enableCombatButtons();
     //-- 2 game over mulighet.
 
-    zombie.hp = 12;
+    zombie.hp = 11;
 
     //-- første zombie fra helikoptere dør.
     afterZombieDeathHandler = async () => {
@@ -132,7 +134,7 @@ async function day7TheEnd() {
       story.innerText += "\n\nEn zombie nede, nå til neste!";
       await tid(4);
       enableCombatButtons();
-      zombie.hp = 12;
+      zombie.hp = 11;
       story.innerText += "\n\nHva gjør du?";
 
       //-- andre zombie fra helikopteret dør.

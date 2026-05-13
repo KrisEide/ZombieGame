@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -18,11 +22,14 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+
+  background:
+    radial-gradient(circle at center, rgba(70, 70, 70, 0.35), transparent 55%),
+    #111;
 }
 
 #game-menu #imageContainer {
   display: flex;
-
   justify-content: center;
   align-items: center;
   position: relative;
@@ -40,35 +47,56 @@ body {
   line-height: 1.6;
   z-index: 2;
   padding: 2rem;
-  font-family: Georgia, serif; /* elegant og skarp */
-  color: rgb(30, 20, 10); /* mørk blekkfarge – ikke kullsvart */
+  font-family: Georgia, serif;
+  color: rgb(30, 20, 10);
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 #starttext-continue-button {
-  width: 150px;
-  height: 40px;
+  min-width: 160px;
+  min-height: 58px;
+
   position: absolute;
-  background-color: darkred;
+  background: linear-gradient(#8b1e1e, #3b0505);
   color: white;
-  font-size: 1.9rem;
-  padding: 20px;
+
+  font-size: 1.6rem;
+  padding: 10px 18px;
+
   align-self: flex-end;
   margin-bottom: 60px;
   margin-left: 300px;
+
   cursor: pointer;
   border-radius: 4px;
+  border: 1px solid rgba(255, 220, 160, 0.35);
+
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.45),
+    0 5px 14px rgba(0, 0, 0, 0.5);
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
 }
 
 .startGameButtonText {
+  margin: 0;
+  line-height: 1.1;
+}
+
+#starttext-continue-button:hover {
+  filter: brightness(1.15);
 }
 
 #starttext-continue-button:active {
   transform: scale(0.97);
-  box-shadow: inset 0 2px 5px rbga(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* --------------------------------------------------- */
@@ -76,21 +104,58 @@ body {
 
 #startGame {
   display: flex;
-
   gap: 2rem;
   padding: 2rem;
-  background-color: #3b3b3b;
-  box-sizing: border-box;
 
+  background:
+    radial-gradient(circle at center, rgba(70, 70, 70, 0.35), transparent 60%),
+    #303030;
+
+  box-sizing: border-box;
   height: 100vh;
-  align-items: stretch; /* ny */
+  align-items: stretch;
+}
+
+/* ---------------- STORY BOX ---------------- */
+
+.box-storyText {
+  padding: 1.5rem;
+  border-radius: 8px;
+
+  background:
+    linear-gradient(rgba(25, 22, 20, 0.95), rgba(8, 7, 6, 0.98)),
+    radial-gradient(circle at top, rgba(130, 55, 35, 0.25), transparent 65%);
+
+  border: 2px solid #2b211d;
+
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.9),
+    0 0 14px rgba(0, 0, 0, 0.75);
+
+  height: auto;
+  width: 400px;
+
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  order: 2;
+  align-self: stretch;
+
+  flex: 0 1 475px;
+  max-width: 600px;
 }
 
 .box-storyText h2 {
-  color: #eec179;
-  margin-bottom: 1rem;
+  color: #c77a4e;
+  margin: 0 0 1.8rem;
   align-self: center;
   font-size: 39px;
+  letter-spacing: 1px;
+
+  text-shadow:
+    0 0 8px rgba(199, 122, 78, 0.25),
+    0 2px 3px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes dayFade {
@@ -107,41 +172,143 @@ body {
 }
 
 #storyText {
-  flex-grow: 1;
+  flex: 1;
+  min-height: 0;
+
   overflow-y: auto;
   scrollbar-width: none;
-  /* ---------------- */
-  height: 100%;
+
   white-space: pre-wrap;
-  color: #ffdead;
+  color: #d7c0a0;
   font-size: 22px;
   line-height: 1.6;
 
-  padding-right: 1rem; /* NY plass mellom tekst og scrollbar */
-  padding-left: 0.5rem; /* NY jevn marg */
-  max-height: 60vh; /* NY aldri mer enn 70% av skjermen høyde 75vh ---- er satt som standar.*/
+  padding-right: 1rem;
+  padding-left: 0.5rem;
 }
 
-.box-storyText {
-  background-color: #4b1818;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #333;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  height: auto;
-  width: 400px;
+#storyText::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------- STATUS PANEL ---------------- */
+
+#statusPanel {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+
+  margin: 30px -12px 20px;
+  padding: 0;
+
+  background: linear-gradient(#181512, #0b0a09);
+
+  border: 5px solid #2a211d;
+  border-radius: 3px;
+
+  box-shadow:
+    inset 0 0 14px rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.statusItem {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  background: linear-gradient(#7a2222, #3e0101);
+  align-items: center;
+  justify-content: center;
 
-  order: 2; /* ny */
-  align-self: center; /* ny */
-  align-self: stretch; /* ny*/
+  min-height: 90px;
+  padding: 10px 6px;
 
-  flex: 0 1 475px; /* ny. tidligere 400px, gir mer plass */
-  max-width: 600px; /* ny. stopper den fra å bli for bred */
+  background:
+    radial-gradient(circle at top, rgba(120, 70, 45, 0.16), transparent 70%),
+    linear-gradient(#1a1714, #0c0b0a);
+
+  border: none;
+  border-right: 2px solid #2a211d;
+
+  color: #e4caa4;
+  font-size: 0.95rem;
+
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.75);
 }
+
+.statusItem:last-child {
+  border-right: none;
+}
+
+.statusItem p {
+  margin: 6px 0 0;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+.statusIcon {
+  font-size: 1.55rem;
+  opacity: 0.85;
+  line-height: 1;
+}
+
+.statusIcon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  opacity: 0.9;
+  display: block;
+}
+
+/* ---------------- HEALTHBARS ---------------- */
+
+#healthbars {
+  margin-top: 14px;
+}
+
+#healthbars p {
+  margin: 0 0 6px;
+  color: #d7c0a0;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+}
+
+#healthbars p:nth-of-type(2) {
+  margin-top: 16px;
+}
+
+.hp-bar {
+  width: 100%;
+  height: 22px;
+
+  background: #0d0b09;
+  border: 2px solid #2a211d;
+  border-radius: 2px;
+
+  overflow: hidden;
+
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.9),
+    0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.hp-bar .fill {
+  height: 100%;
+  transition: width 250ms ease;
+
+  background:
+    linear-gradient(90deg, #9b4f27, #d98542),
+    linear-gradient(rgba(255, 255, 255, 0.12), transparent);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.35);
+}
+
+#zombieHpBar .fill {
+  background:
+    linear-gradient(90deg, #7d886f, #3f4d3c),
+    linear-gradient(rgba(255, 255, 255, 0.12), transparent);
+}
+
+/* ---------------- CHOICE BUTTONS ---------------- */
 
 .box-choices {
   display: flex;
@@ -150,26 +317,45 @@ body {
 
   max-width: 400px;
   overflow-y: auto;
-  align-self: stretch; /* ny*/
+  align-self: stretch;
+  order: 1;
+
+  scrollbar-width: thin;
 }
 
 .box-choices button {
   flex: 1 1 50%;
-  padding: 1rem;
+  padding: 1.2rem;
   font-size: 2rem;
-  background-color: #4b1818;
-  border: none;
+  min-height: 170px;
+
+  background:
+    linear-gradient(145deg, #1d1b18, #070707),
+    radial-gradient(circle at top, rgba(120, 60, 40, 0.2), transparent 60%);
+
+  border: 2px solid #2a211d;
   border-radius: 6px;
+
   color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  background: linear-gradient(#7a2222, #3e0303);
+
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.85),
+    0 4px 10px rgba(0, 0, 0, 0.55);
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease,
+    background 0.2s ease,
+    opacity 0.15s ease;
 }
 
 .box-choices button img {
   object-fit: contain;
-  width: 100px;
-  height: 100px;
+  width: 170px;
+  height: 140px;
+
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.75));
 }
 
 .gun,
@@ -177,23 +363,44 @@ body {
 .mag,
 .aid,
 .inv {
-  max-width: 100px;
+  max-width: 180px;
+  max-height: 145px;
 }
 
-.box-choices button:hover {
-  background: linear-gradient(#ba3535, #800606);
+.box-choices button:hover:not(:disabled) {
+  background:
+    linear-gradient(145deg, #2a1a14, #0c0c0c),
+    radial-gradient(circle at top, rgba(150, 80, 45, 0.25), transparent 65%);
+
+  transform: translateY(-2px);
+  filter: brightness(1.12);
 }
 
-button:hover img {
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+button:hover:not(:disabled) img {
+  filter: drop-shadow(0 0 8px rgba(220, 140, 80, 0.55))
+    drop-shadow(0 0 5px rgba(0, 0, 0, 0.9));
 }
 
-.box-choices button:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.9) inset;
+.box-choices button:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.95),
+    0 1px 3px rgba(0, 0, 0, 0.8);
+
   transition:
-    all 0.1 ease,
-    box-shadow 0.2 ease;
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+.box-choices button:disabled {
+  opacity: 1;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.box-choices button:disabled img {
+  opacity: 0.75;
+  filter: brightness(0.75);
 }
 
 /* ---------------- BILDER --------------------- */
@@ -202,13 +409,15 @@ button:hover img {
   flex: 8;
   border-radius: 8px;
   overflow: hidden;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   padding: 1rem;
-  order: 3; /* ny */
-  align-self: stretch; /* ny*/
-  min-height: 0; /* ny*/
+  order: 3;
+  align-self: stretch;
+  min-height: 0;
 }
 
 .box-right-picture img.mainPicture {
@@ -216,9 +425,13 @@ button:hover img {
   max-height: 100%;
   object-fit: contain;
 
-  border: 4px solid #222;
+  border: 4px solid #171310;
   border-radius: 8px;
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.7);
+
+  box-shadow:
+    0 0 18px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(120, 80, 55, 0.25);
+
   background-color: #000;
 }
 
@@ -230,27 +443,36 @@ button:hover img {
 /* bilder knapper */
 .image-choice-button {
   cursor: pointer;
-  background: linear-gradient(
-    180deg,
-    #353535,
-    #262626
-  ); /* bakgrunnsfarge på valg knappene */
+
+  background: linear-gradient(180deg, #1d1b18, #0c0b0a);
+
+  border: 2px solid #2a211d;
   border-radius: 12px;
   padding: 12px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+
+  box-shadow:
+    inset 0 0 16px rgba(0, 0, 0, 0.8),
+    0 6px 24px rgba(0, 0, 0, 0.45);
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .image-choice-button img {
   width: 400px;
   height: auto;
-  border: 2px solid #444;
+
+  border: 2px solid #3a2a22;
   border-radius: 8px;
   margin: 7px;
+
   transition: transform 0.3s ease;
 }
 
 .image-choice-button:hover {
   transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
 .image-choice-button:hover img {
@@ -259,13 +481,13 @@ button:hover img {
 
 #pictureChoiceContainer.choice-active {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 30px;
   justify-items: center;
   align-items: center;
-  overflow-y: auto; /* NY */
-  grid-template-columns: repeat(2, minmax(280px, 1fr)); /* to kolonner */
+  overflow-y: auto;
+
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
 }
 
 #pictureChoiceContainer.choice-active .image-choice-button:first-child {
@@ -276,10 +498,12 @@ button:hover img {
 #pictureChoiceContainer.choice-active .image-choice-button img {
   width: 100%;
   height: auto;
-  max-height: 38vh; /* gjør bildene litt mindre i denne visningen */
+  max-height: 38vh;
   object-fit: contain;
   margin: 0;
 }
+
+/* ---------------- SPECIAL EFFECTS ---------------- */
 
 .glow {
   animation: glowPulse 2.5s infinite;
@@ -297,53 +521,17 @@ button:hover img {
   }
 }
 
-.hp-bar {
-  height: 15px;
-  background: darkred; /* bakgrunn (tom del av hp) */
-  border: 1px solid black;
-}
-
-.hp-bar .fill {
-  height: 100%;
-  transition: width 250ms ease; /* myk bevegelse */
-  background: linear-gradient(90deg, #eec179, #b98235);
-}
-
-#zombieHpBar .fill {
-  background: linear-gradient(90deg, #8b9a88, #586656);
-}
+/* ---------------- RESPONSIVE ---------------- */
 
 @media (max-width: 1200px), (max-height: 800px) {
   #pictureChoiceContainer.choice-active {
-    display: flex; /* <-- bytt fra grid til flex */
-    flex-direction: column; /* <-- under hverandre */
+    display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
   #pictureChoiceContainer.choice-active .image-choice-button {
-    flex: 1 1 0; /* <-- del høyden likt mellom 1–3 bilder */
+    flex: 1 1 0;
     min-height: 0;
   }
-}
-
-#statusPanel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-
-  margin: 12px 0 18px;
-  padding: 9px 12px;
-  margin-top: 40px;
-
-  font-size: 0.9rem;
-
-  background: rgba(0, 0, 0, 0.32);
-  border: 1px solid rgba(238, 199, 113, 0.35);
-  border-radius: 6px;
-}
-
-#statusPanel p {
-  margin: 0;
-  white-space: nowrap;
 }

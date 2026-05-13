@@ -31,9 +31,41 @@
         <div id="storyText" class="story-boxScroll"></div>
 
         <div id="statusPanel">
-          <p id="ammoStatus">Pistol: 6 | Sekk: 4</p>
-          <p id="firstAidStatus">Førstehjelp: 1</p>
-          <p id="knifeStatus">Kniv: klar</p>
+          <div class="statusItem">
+            <img
+              id="rangedWeaponIcon"
+              src="Bilder3/Hand-gun.png"
+              class="statusIcon"
+            />
+            <p id="pistolStatus">Pistol: 6</p>
+          </div>
+
+          <div class="statusItem">
+            <img
+              id="rangedWeaponIcon"
+              src="Bilder3/pngtree-bullet-9mm.png"
+              class="statusIcon"
+            />
+            <p id="bagAmmoStatus">Sekk: 4</p>
+          </div>
+
+          <div class="statusItem">
+            <img
+              id="rangedWeaponIcon"
+              src="Bilder3/firstaidicon.png"
+              class="statusIcon"
+            />
+            <p id="firstAidStatus">Førstehjelp: 1</p>
+          </div>
+
+          <div class="statusItem">
+            <img
+              id="rangedWeaponIcon"
+              src="Bilder3/knifeicon2.png"
+              class="statusIcon"
+            />
+            <p id="knifeStatus">Kniv: klar</p>
+          </div>
         </div>
 
         <!-- HEALTHBAR START -->
@@ -460,7 +492,7 @@
       // }
 
       if (player.ammoPistol <= 0) {
-        story.innerText += "\nDu er tomt for ammo.";
+        story.innerText += "\nDu er tom for ammo.";
 
         await tid(1);
         story.innerText += "\n(Velg igjen)";
