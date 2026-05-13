@@ -303,7 +303,7 @@ async function gasStationRooftop() {
   story.innerText += "\n\nDu leter rundt i pappesker og annet rot";
   await tid(4);
 
-  story.innerText += "\n\nIngeting av verdi";
+  story.innerText += "\n\nIngenting av verdi";
   await tid(3);
 
   story.innerText += "\n\nDu tar et siste blikk over taket";

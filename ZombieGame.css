@@ -313,10 +313,6 @@ button:hover img {
   background: linear-gradient(90deg, #8b9a88, #586656);
 }
 
-#healthbars {
-  padding-top: 50px;
-}
-
 @media (max-width: 1200px), (max-height: 800px) {
   #pictureChoiceContainer.choice-active {
     display: flex; /* <-- bytt fra grid til flex */
@@ -328,4 +324,26 @@ button:hover img {
     flex: 1 1 0; /* <-- del høyden likt mellom 1–3 bilder */
     min-height: 0;
   }
+}
+
+#statusPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  margin: 12px 0 18px;
+  padding: 9px 12px;
+  margin-top: 40px;
+
+  font-size: 0.9rem;
+
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(238, 199, 113, 0.35);
+  border-radius: 6px;
+}
+
+#statusPanel p {
+  margin: 0;
+  white-space: nowrap;
 }

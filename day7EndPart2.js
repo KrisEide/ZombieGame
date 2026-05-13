@@ -132,6 +132,7 @@ async function safeRoute() {
       await tid(3);
 
       // første zombie etter du fant hagla.
+      zombie.hp = 10;
       enableCombatButtons();
       story.innerText += "\n\nHva gjør du?";
       afterZombieDeathHandler = async () => {

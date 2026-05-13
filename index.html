@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -29,6 +29,12 @@
       <div class="box-storyText">
         <h2 id="whatDay" class="top-text-days">|| Dag 1 ||</h2>
         <div id="storyText" class="story-boxScroll"></div>
+
+        <div id="statusPanel">
+          <p id="ammoStatus">Pistol: 6 | Sekk: 4</p>
+          <p id="firstAidStatus">Førstehjelp: 1</p>
+          <p id="knifeStatus">Kniv: klar</p>
+        </div>
 
         <!-- HEALTHBAR START -->
 
@@ -133,8 +139,6 @@
       get hp() {
         return this._hp;
       },
-
-      maxHp: 10,
       ammoPistol: 6,
       ammoSekk: 4,
       maxAmmo: 4,
@@ -431,7 +435,7 @@
           showPlayerStatusPlus();
           break;
         default:
-          story.innerText = "ukjent handlling. Prøv på nytt.";
+          story.innerText = "ukjent handling. Prøv på nytt.";
       }
     }
 
@@ -456,7 +460,7 @@
       // }
 
       if (player.ammoPistol <= 0) {
-        story.innerText += "\nDu er tom for ammo.";
+        story.innerText += "\nDu er tomt for ammo.";
 
         await tid(1);
         story.innerText += "\n(Velg igjen)";
@@ -472,7 +476,7 @@
       let critCalculated = headShotCalculated + critChance;
       let missCalcuated = critCalculated + missChance;
 
-      // 2-4 damage med 7% instacill sjanse, dobbel damage på 15% sjanse og 20% sjanse til å misse.
+      // 2-4 damage med 7% instakill sjanse, dobbel damage på 15% sjanse og 20% sjanse til å misse.
 
       let roll = Math.floor(Math.random() * 100);
       let normalDamage = Math.floor(Math.random() * 3) + 2;
@@ -549,7 +553,7 @@
       const hitText = getRandomShotgunHitText();
 
       if (player.ammoShotGun <= 0) {
-        story.innerText += "\nDu er tom for ammo.";
+        story.innerText += "\nDu er tomt for ammo.";
 
         await tid(1);
         story.innerText += "\n(Velg igjen)";
@@ -585,10 +589,22 @@
 
       // 1-4 damage med 8% sjanse for instakill men med broken knife
       let knifeNormalDamage = Math.floor(Math.random() * 4) + 1;
-      let instaKillChance = Math.floor(Math.random() * 100);
+      let instaKillRoll = Math.floor(Math.random() * 100);
 
-      //headshot/critical hit med kniven
-      if (zombie.hp <= 10 && instaKillChance < 7) {
+      let knifeInstakillChance = 0;
+
+      // Ikke bruk instakill på zombier som nesten er døde.
+      // Det føles dårlig for spilleren å skade kniven på en 1 HP zombie.
+      if (zombie.hp >= 5 && zombie.hp <= 10) {
+        knifeInstakillChance = 7;
+      }
+
+      // Sterke zombier kan fortsatt one-hittes, men det er sjeldent.
+      if (zombie.hp > 10) {
+        knifeInstakillChance = 4;
+      }
+
+      if (knifeInstakillChance > 0 && instaKillRoll < knifeInstakillChance) {
         knifeInstakillTriggered = true;
         story.innerText +=
           "\n\nI nærkampens kaos finner du en åpning og planter kniven rett i hodet på zombien.";
@@ -880,20 +896,23 @@
     function gameOver(deathMessage = "") {
       const gameImg = document.getElementById("gameImage");
       if (isItGameOver) return;
+
       isItGameOver = true;
-      disableButtons(); //stopper alle knappene siden spiller har tapt.
-      story.innerText += `\n\n${deathMessage}`;
+      disableButtons();
+
+      if (deathMessage) {
+        story.innerText += `\n\n${deathMessage}`;
+      }
 
       if (day7DeathMessage) {
-        story.innerText += `\n\n${deathMessage}`;
+        story.innerText += `\n\n${day7DeathMessage}`;
         day7DeathMessage = null;
       }
 
-      //bytter til GAME OVER-bilde
       if (gameImg) {
         if (day7DeathImage) {
           gameImg.src = day7DeathImage;
-          day7DeathImage = null; // reset
+          day7DeathImage = null;
         } else {
           gameImg.src = "Bilder/GAME_OVER.png";
         }
@@ -957,28 +976,31 @@
         }
         story.innerText += `\n\nDu bruker et førstehjelpsskrin. Din HP er nå ${player.hp}.`;
       } else {
-        story.innerText += "\n\nDu trenger ikke førsthelp nå.";
+        story.innerText += "\n\nDu trenger ikke førstehelp nå.";
       }
       waitBeforeButtonActivates(3000, "\n(velg igjen)");
     }
 
     async function reload() {
+      disableButtons();
+
       if (player.hasShotGun) {
-        reloadShotgun();
+        await reloadShotgun();
         await tid(2);
         story.innerText += "\n(Velg igjen)";
         enableButtons();
         return;
       }
 
-      if (player.ammoPistol === 10) {
-        story.innerText += "\nMagasine ditt er allerede fullt.";
+      if (player.ammoPistol >= player.maxAmmo) {
+        story.innerText += "\nMagasinet ditt er allerede fullt.";
         await tid(1);
         story.innerText += "\n\n(Velg igjen)";
         enableButtons();
         return;
       }
-      if (player.ammoSekk === 0) {
+
+      if (player.ammoSekk <= 0) {
         story.innerText += "\nDu har ikke noe ammo i sekken.";
         await tid(1);
         story.innerText += "\n\n(Velg igjen)";
@@ -987,17 +1009,13 @@
       }
 
       const spaceInMag = player.maxAmmo - player.ammoPistol;
-      const ammoToLoad = Math.min(5, spaceInMag, player.ammoSekk);
+      const ammoToLoad = Math.min(spaceInMag, player.ammoSekk);
 
       player.ammoPistol += ammoToLoad;
       player.ammoSekk -= ammoToLoad;
 
       story.innerText += `\n\nDu lader pistolen med ${ammoToLoad} skudd.`;
       story.innerText += `\nAmmo i pistolen: ${player.ammoPistol}.\nAmmo i sekken: ${player.ammoSekk}.`;
-
-      if (player.ammoPistol > 10) {
-        player.ammoPistol = player.maxAmmo;
-      }
 
       await tid(2);
       story.innerText += "\n\n(Velg igjen)";
@@ -1039,4 +1057,5 @@
       }
     }, 200); // Sjekker 5 ganger i sekundet
   </script>
+  <script src="statusPanel.js"></script>
 </html>
