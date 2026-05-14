@@ -979,15 +979,17 @@
         }
       }
 
+      const antallKniver =
+        (player.hasKnife ? 1 : 0) + player.extraKnives.length;
+
       story.innerText += `\n
           Ammo i pistolen: ${player.ammoPistol}
           Ammo i sekken: ${player.ammoSekk}
           Førstehjelpsskrin: ${player.førstehjelpsskrin}
           Din HP: ${player.hp}
-          Knivs tilstand:${knifeStatus}`;
-      if (player.extraKnives.length > 0) {
-        story.innerText += `\nReserve kniver i sekken: ${player.extraKnives.length}`;
-      }
+          
+          Knivs tilstand:${knifeStatus}
+          Kniver totalt: ${antallKniver}`;
 
       waitBeforeButtonActivates(2000, "(velg igjen)");
     }

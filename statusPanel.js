@@ -26,14 +26,16 @@ function updateStatusPanel() {
 
   firstAidStatus.innerText = `Førstehjelp: ${player.førstehjelpsskrin}`;
 
+  const totalKnives = (player.hasKnife ? 1 : 0) + player.extraKnives.length;
+
   if (!player.hasKnife) {
-    knifeStatusEl.innerText = "Kniv: ingen";
+    knifeStatusEl.innerText = `Kniver: ${totalKnives}`;
   } else if (player.knifeUses >= 7) {
-    knifeStatusEl.innerText = "Kniv: klar";
+    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Skarp`;
   } else if (player.knifeUses >= 4) {
-    knifeStatusEl.innerText = "Kniv: slitt";
+    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Slitt`;
   } else {
-    knifeStatusEl.innerText = "Kniv: svak";
+    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Sprukket`;
   }
 }
 
