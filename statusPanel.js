@@ -28,14 +28,26 @@ function updateStatusPanel() {
 
   const totalKnives = (player.hasKnife ? 1 : 0) + player.extraKnives.length;
 
-  if (!player.hasKnife) {
-    knifeStatusEl.innerText = `Kniver: ${totalKnives}`;
-  } else if (player.knifeUses >= 7) {
-    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Skarp`;
-  } else if (player.knifeUses >= 4) {
-    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Slitt`;
+  if (player.hasMachete) {
+    if (player.macheteUses >= 7) {
+      knifeStatusEl.innerText = `Machete: Skarp`;
+    } else if (player.macheteUses >= 4) {
+      knifeStatusEl.innerText = `Machete: Slitt`;
+    } else {
+      knifeStatusEl.innerText = `Machete: Sprukket`;
+    }
   } else {
-    knifeStatusEl.innerText = `Kniver: ${totalKnives} | Sprukket`;
+    const totalKnives = (player.hasKnife ? 1 : 0) + player.extraKnives.length;
+
+    if (!player.hasKnife) {
+      knifeStatusEl.innerText = `Kniver: ${totalKnives}`;
+    } else if (player.knifeUses >= 7) {
+      knifeStatusEl.innerText = `Kniver: ${totalKnives} | Skarp`;
+    } else if (player.knifeUses >= 4) {
+      knifeStatusEl.innerText = `Kniver: ${totalKnives} | Slitt`;
+    } else {
+      knifeStatusEl.innerText = `Kniver: ${totalKnives} | Sprukket`;
+    }
   }
 }
 

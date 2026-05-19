@@ -9,7 +9,7 @@ async function officeBuilding() {
   currentEncounterLocation = "officeBuilding";
   disableCombatButtons();
 
-  setGameImage("Bilder/office11.png");
+  setGameImage("Bilder/office12.png");
   story.innerText +=
     "\nDu går mot kontorbygget for å lete etter forsyninger...";
   await tid(5);
@@ -127,104 +127,61 @@ async function officeUpstairs() {
 async function officeMeetingRoom() {
   story.innerText +=
     "\n\nDu åpner en dør og trer inn i et stort møterom med glassvegger.";
-  await tid(6);
+  await tid(4);
 
-  story.innerText +=
-    "\n\nLukten av kaffe som har stått altfor lenge henger fortsatt i lufta.";
-  await tid(6);
   setGameImage("Bilder2/kontor1.png");
-
   story.innerText +=
-    "\n\nDu smyger deg langs veggen. Et glass knaser under skoen din.";
-  await tid(6);
-
-  story.innerText += "\n\nStillhet. Så et lite metallisk klirr fra bordenden.";
+    "\n\nLukten av gammel kaffe og støv henger fortsatt i lufta.";
   await tid(4);
 
-  story.innerText += "\n\nPå enden av bordet står en svart konferansekoffert.";
-  await tid(5);
+  story.innerText +=
+    "\n\nDu smyger deg langs veggen. Glass knaser under skoen din.";
+  await tid(3);
+
+  story.innerText +=
+    "\n\nVed siden av en veltet stol ligger et førstehjelpsskrin.";
+  player.førstehjelpsskrin += 1;
+  await tid(4);
+
+  story.innerText += `\n\nFørstehjelpsskrin: ${player.førstehjelpsskrin}`;
+  await tid(4);
+
+  story.innerText += "\n\nEt lite metallisk klirr får deg til å stoppe.";
+  await tid(3);
+
   setGameImage("Bilder2/koffert.png");
-
-  story.innerText +=
-    "\n\nI motsetning til resten av rommet er den nesten merkelig ren.";
-  await tid(5);
-
-  story.innerText += "\n\nDu lar hånden gli over lokket.";
+  story.innerText += "\n\nPå enden av bordet står en svart konferansekoffert.";
   await tid(4);
 
-  story.innerText += "\n\nStøvet rundt har lagt seg som en ramme.";
-  await tid(5);
-
-  story.innerText +=
-    "\n\nSelve kofferten ser ut som om noen nylig har berørt den.";
-  await tid(5);
-
-  story.innerText += "\n\nLåsen er sprukket, men lokket sitter fast. ";
-  await tid(4);
-  story.innerText += "\n\nDu drar i håndtaket. Ingenting.";
+  story.innerText += "\n\nDen er støvete, men merkene rundt den ser ferske ut.";
   await tid(4);
 
-  story.innerText += "\n\nDu prøver å riste den - den gir ikke etter.";
-  await tid(5);
-
-  story.innerText += "\n\nEt hul klirr høres innenfra, metall mot metall.";
-  await tid(5);
-
-  story.innerText +=
-    "\n\nMed knokene hvite griper du låsen og forsøker å vri den opp.";
-  await tid(5);
-
-  story.innerText += "\n\nDen gir ikke etter. Fingrene verker.";
-  await tid(4);
-
-  story.innerText += "\n\nFrustrert dytter du kofferten ned på gulvet.";
+  story.innerText += "\n\nLåsen er sprukket, men lokket sitter fortsatt fast.";
   await tid(4);
 
   story.innerText +=
-    "\n\nLyden av metall som treffer teppet gir et ubehagelig ekko i rommet.";
-  await tid(5);
+    "\n\nDu finner et metallrør på gulvet og presser det inn ved hengselet.";
+  await tid(4);
 
   story.innerText +=
-    "\n\nDu leter febrilsk etter noe å bruke – et stolbein, et bordhjørne, hva som helst.";
+    "\n\nEt hardt rykk. Et metallisk knekk. Lokket spretter opp.";
+  await tid(4);
+
+  story.innerText +=
+    "\n\nInni ligger gamle papirer, ledninger og noe langt pakket inn i en skitten klut.";
+  await tid(5);
+
+  story.innerText += "\n\nDu drar kluten til side og finner en machete.";
+  pickUpMachete();
+  setGameImage("Bilder3/Machetekoffert.png");
   await tid(6);
 
-  story.innerText += "\n\nDu finner et metallrør.";
-  await tid(4);
-
-  story.innerText += "\n\ndu setter metallrøret mot hengselet og presser.";
-  await tid(4);
-
-  story.innerText += "\n\nKofferten rikker seg ikke.";
-  await tid(4);
-
-  story.innerText += "\n\nDu biter tennene sammen, hever foten og sparker til.";
-  await tid(4);
-
   story.innerText +=
-    "\n\nLokket spretter halvveis opp med et hult smell, som om rommet holder pusten.";
-  await tid(6);
-
-  story.innerText += "\n\nDu bøyer deg ned og trekker opp lokket.";
-  await tid(4);
-
-  story.innerText += "\n\nØynene dine møter mørket inni.";
-  await tid(4);
-
-  story.innerText += "\n\npapirbunker, gamle ledninger";
-  await tid(4);
-
-  // Loot: 2 kniver
-  story.innerText +=
-    "\n\nUnder en bunke notatblokker ligger to store kniver - blanke og skarpe.";
-  pickUpNewKnife();
-  pickUpNewKnife();
-  await tid(6);
-
-  story.innerText += "\nKnivene er dine. Kofferten kan dra til helvete.";
+    "\n\nBladet er tungt og skarpt nok, men sporene etter tidligere bruk er tydelige.";
   await tid(5);
 
-  story.innerText += "\nDu sniker deg tilbake";
-  await tid(4);
+  story.innerText += "\n\nDu tar det du fant og sniker ned trappen";
+  await tid(5);
 
   finishEncounter();
 }
@@ -268,13 +225,13 @@ async function officeRoof() {
     "\n\nDu lirker lokket opp og kjenner lukten av olje og metall.";
   await tid(5);
 
-  // Loot: 5 ammo
-  player.ammoSekk += 5;
   story.innerText += "\n\nI bunnen ligger en plastpose surret med gaffatape.";
   await tid(5);
 
   story.innerText +=
     "\n\nDu river den opp: fem patroner ruller ut i hånden din.";
+  // Loot: 5 ammo
+  player.ammoSekk += 5;
   story.innerText += `\n\nAmmo i sekken: ${player.ammoSekk}`;
   await tid(6);
 
@@ -331,46 +288,61 @@ async function officeBasement() {
   story.innerText += "\n\nDu går ned trappen til kjelleren.";
   await tid(4);
 
-  story.innerText += "\n\nDu tar frem lommelykten.";
-  await tid(5);
+  story.innerText += "\n\nLuften blir kaldere, og du tar frem lommelykten.";
+  await tid(4);
 
   story.innerText += "\n\nDu skvetter til!";
   await tid(2);
 
-  story.innerText += "\n\nEn død zombie på gulvet.";
+  setGameImage("Bilder3/BasementDeadZombie.png");
+  story.innerText += "\n\nEn død zombie ligger midt i gangen.";
+  await tid(4);
+
+  story.innerText += "\n\nDu holder pistolen mot hodet dens.";
   await tid(3);
 
-  story.innerText += "\n\nDu tar frem pistolen og lister deg videre.";
-  await tid(4);
-
-  story.innerText += "\n\nDet er kjølig.";
+  story.innerText += "\n\nDen rører seg ikke.";
   await tid(3);
 
-  story.innerText += "\n\nEn guffen følelse kommer over deg.";
-  await tid(5);
+  story.innerText += "\n\nDu går forsiktig videre.";
+  await tid(4);
 
-  story.innerText += "\n\nDu hører en dunkelyd.";
+  story.innerText += "\n\nEn dump lyd kommer fra mørket.";
   await tid(3);
 
-  story.innerText += "\n\nLommelykten treffer en rad med gamle skap...";
+  story.innerText += "\n\nLommelykten treffer en rad med gamle skap.";
+  setGameImage("Bilder3/Lommelyktpåskap.png");
   await tid(4);
 
-  story.innerText += "\n\nEtt av dem rister spesielt mye.";
+  story.innerText += "\n\nEtt av skapene rister.";
+  await tid(3);
+
+  story.innerText += "\n\nEn råtten hånd slår ut gjennom sprekken i skapdøren.";
+  await tid(3);
+  setGameImage("Bilder3/zombieskap.png");
+
+  story.innerText += "\n\nDu hopper bakover og holder nesten på å skyte.";
   await tid(4);
 
-  story.innerText += "\n\n Du ser forsiktig inn...";
-  await tid(4);
+  story.innerText += "\n\nMen zombien sitter fast.";
+  await tid(3);
 
   story.innerText +=
-    "\n\nEn zombie sitter fast. Du lar den være og lister deg videre.";
+    "\n\nSkapdøren knirker. Den kan komme seg løs hvis du blir her lenge nok.";
   await tid(5);
 
-  story.innerText +=
-    "\n\nDu lyser rundt i kjelleren, men finner ingenting annet enn mørke og rå lukt";
-  await tid(5);
+  story.innerText += "\n\nDu lyser raskt rundt i kjelleren.";
+  await tid(3);
 
   story.innerText +=
-    "\n\nKlokken tikker — det begynner å bli sent. Du gir opp letingen og drar tilbake.";
+    "\n\nMugg. Ødelagte stoler. Gamle mapper. Ingenting verdt risikoen.";
+  setGameImage("Bilder3/Mugg.png");
+  await tid(4);
+
+  story.innerText += "\n\nDette stedet er ikke verdt et eneste skudd.";
+  await tid(4);
+
+  story.innerText += "\n\nDu trekker deg tilbake og drar tilbake til campen.";
   await tid(5);
 
   //loot/zombie?

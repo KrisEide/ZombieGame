@@ -33,7 +33,7 @@
         <div id="statusPanel">
           <div class="statusItem">
             <img
-              id="rangedWeaponIcon"
+              id="StatusWeaponIcon"
               src="Bilder3/Hand-gun.png"
               class="statusIcon"
             />
@@ -41,29 +41,17 @@
           </div>
 
           <div class="statusItem">
-            <img
-              id="rangedWeaponIcon"
-              src="Bilder3/pngtree-bullet-9mm.png"
-              class="statusIcon"
-            />
+            <img src="Bilder3/pngtree-bullet-9mm.png" class="statusIcon" />
             <p id="bagAmmoStatus">Sekk: 4</p>
           </div>
 
           <div class="statusItem">
-            <img
-              id="rangedWeaponIcon"
-              src="Bilder3/firstaidicon.png"
-              class="statusIcon"
-            />
+            <img src="Bilder3/firstaidicon.png" class="statusIcon" />
             <p id="firstAidStatus">Førstehjelp: 1</p>
           </div>
 
           <div class="statusItem">
-            <img
-              id="rangedWeaponIcon"
-              src="Bilder3/knifeicon2.png"
-              class="statusIcon"
-            />
+            <img src="Bilder3/knifeicon2.png" class="statusIcon" />
             <p id="knifeStatus">Kniv: klar</p>
           </div>
         </div>
@@ -155,7 +143,7 @@
     let knifeGoneWarning = false;
     let knifeInstakillTriggered = false;
     let hasFlameThrower = false;
-    let dag = 1;
+    let dag = 7;
 
     story.innerText = "Det kommer en zombie mot deg i det fjerne, hva gjør du?";
 
@@ -182,6 +170,9 @@
       ammoShotGun: 0,
       shotGunAmmoSekk: 10,
       maxAmmoShotGun: 2,
+
+      hasMachete: false,
+      macheteUses: 0,
     };
 
     let zombie = {
@@ -358,7 +349,10 @@
       const weaponIcon = document.getElementById("weaponIcon");
       if (!weaponIcon) return;
 
-      if (!player.hasKnife) {
+      if (player.hasMachete) {
+        weaponIcon.src = "Bilder3/machete.png";
+        weaponIcon.alt = "machete";
+      } else if (!player.hasKnife) {
         weaponIcon.src = "Bilder/fist.png";
         weaponIcon.alt = "knyttneve";
       } else {
@@ -386,6 +380,9 @@
       if (player.hasShotGun) {
         rangedIcon.src = "Bilder/shotgun.png";
         rangedIcon.title = "Double-barrel shotgun";
+
+        rangedIcon.classList.remove("gun");
+        rangedIcon.classList.add("shotgun");
         rangedIcon.classList.add("glow");
       }
     }
@@ -403,6 +400,15 @@
         player.extraKnives.push(newKnife);
         story.innerText += "\n\nDu legger den i sekken.";
       }
+    }
+
+    // -----BONUS: Machete-----------
+
+    function pickUpMachete(uses = 8) {
+      player.hasMachete = true;
+      player.macheteUses = uses;
+
+      updateCloseCombatIcon();
     }
 
     function disableButtons() {
@@ -608,8 +614,10 @@
     async function knifeAttack() {
       disableButtons();
 
+      const usingMachete = player.hasMachete;
+
       if (!player.hasKnife) {
-        if (!knifeGoneWarning) {
+        if (!usingMachete && !knifeGoneWarning) {
           story.innerText += "\n\nDu strammer knyttnevene. Det er alt du har.";
           updateCloseCombatIcon();
           knifeGoneWarning = true;
@@ -620,7 +628,16 @@
       }
 
       // 1-4 damage med 8% sjanse for instakill men med broken knife
-      let knifeNormalDamage = Math.floor(Math.random() * 4) + 1;
+      let knifeNormalDamage;
+
+      if (usingMachete) {
+        // Machete gjør 3-5 skade
+        knifeNormalDamage = Math.floor(Math.random() * 3) + 3;
+      } else {
+        // Kniv gjør 1-4 skade
+        knifeNormalDamage = Math.floor(Math.random() * 4) + 1;
+      }
+
       let instaKillRoll = Math.floor(Math.random() * 100);
 
       let knifeInstakillChance = 0;
@@ -628,7 +645,11 @@
       // Ikke bruk instakill på zombier som nesten er døde.
       // Det føles dårlig for spilleren å skade kniven på en 1 HP zombie.
       if (zombie.hp >= 5 && zombie.hp <= 10) {
-        knifeInstakillChance = 7;
+        if (usingMachete) {
+          knifeInstakillChance = 8;
+        } else {
+          knifeInstakillChance = 7;
+        }
       }
 
       // Sterke zombier kan fortsatt one-hittes, men det er sjeldent.
@@ -675,14 +696,25 @@
 
       zombie.hp -= knifeNormalDamage;
       zombieZero();
-      player.knifeUses--;
-
-      story.innerText += `\n\nDu angriper med kniven og gjør ${knifeNormalDamage} skade.`;
+      if (usingMachete) {
+        player.macheteUses--;
+        story.innerText += `\n\nDu angriper med macheten og gjør ${knifeNormalDamage} skade.`;
+      } else {
+        player.knifeUses--;
+        story.innerText += `\n\nDu angriper med kniven og gjør ${knifeNormalDamage} skade.`;
+      }
       await tid(2);
+      if (usingMachete && player.macheteUses <= 0) {
+        story.innerText += "\n\nMacheten er for ødelagt til å brukes mer.";
+        player.hasMachete = false;
+        player.macheteUses = 0;
+        updateCloseCombatIcon();
+        await tid(2);
+      }
 
       const zombieDød = zombie.hp <= 0;
 
-      if (player.knifeUses <= 0) {
+      if (!usingMachete && player.knifeUses <= 0) {
         story.innerText += "\n\nKniven din knekker!";
         await tid(2);
         player.hasKnife = false;
@@ -887,7 +919,7 @@
 
         if (player.hasShotGun) {
           await tid(5);
-          story.innerText += "\nZombien har 0 liv igjen. Duh.";
+          story.innerText += "\nZombien er død.";
           await tid(2);
         }
 
@@ -987,7 +1019,7 @@
           Ammo i sekken: ${player.ammoSekk}
           Førstehjelpsskrin: ${player.førstehjelpsskrin}
           Din HP: ${player.hp}
-          
+
           Knivs tilstand:${knifeStatus}
           Kniver totalt: ${antallKniver}`;
 

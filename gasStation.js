@@ -41,7 +41,7 @@ function supplyRun() {
 
   if (!visitedSupplyRunPlace.office) {
     choices.push({
-      image: "Bilder/office11.png",
+      image: "Bilder/office12.png",
       title: "Ett gammelt kontorbygg",
       action: () => {
         visitedSupplyRunPlace.office = true;
@@ -161,6 +161,8 @@ async function gasStation() {
   story.innerText += "\n\ndu snur deg brått å ser en zombie komme mot deg.";
   setGameImage("Bilder/utenforstasjon.png");
   await tid(3);
+  story.innerText += "\n\nDen halter, den er svakere enn de andre";
+  await tid(3);
   zombie.hp = 6;
   enableCombatButtons();
 
@@ -181,7 +183,7 @@ async function gasStation() {
         action: gasStationInside,
       },
       {
-        image: "Bilder/Bakstasjon.png",
+        image: "Bilder/Bakstasjonen.png",
         title: "gå bak bensinstasjonen",
         action: gasStationBehind,
       },
@@ -257,7 +259,7 @@ async function gasStationBehind() {
 
   story.innerText += "\n\nHva gjør du?";
 
-  zombie.hp = 9;
+  zombie.hp = 10;
   enableCombatButtons();
 
   // Hva som skjer etter at denne zombien dør:
@@ -390,7 +392,7 @@ async function gasStationSearchCars() {
     await tid(5);
 
     story.innerText +=
-      "\nMed nye forsyninger, men kroppen fortsatt sliten, trekker du deg tilbake.";
+      "\nMed nye forsyninger, men kroppen fortsatt sliten, trekker du deg.";
     await tid(7);
 
     finishEncounter();
@@ -502,9 +504,14 @@ async function forestPathLeft() {
     "\n\nDu hører elva før du ser den. En gammel trebro henger skjevt.";
   await tid(4);
   setGameImage("Bilder/elv.png");
-  story.innerText +=
-    "\n\nEt lavt stønn fra buskene - en zombie vakler ut på plankene.";
-  await tid(5);
+  story.innerText += "\n\nEt lavt stønn kommer fra buskene.";
+  await tid(2);
+
+  story.innerText += "\n\nEn svak zombie kommer ut på broen.";
+  await tid(3);
+
+  story.innerText += "\n\nDen går sakte. Den ser ikke særlig farlig ut.";
+  await tid(3);
 
   zombie.hp = 5;
   enableCombatButtons();
@@ -512,12 +519,12 @@ async function forestPathLeft() {
 
   afterZombieDeathHandler = async () => {
     story.innerText +=
-      "\n\nBroa knirker, men holder. På motsatt side står en rusten førstehjelpsboks.";
+      "\n\nBroa knirker, men holder. På motsatt side står en gammel sekk.";
     await tid(5);
 
     //loot? 2 FS
     player.førstehjelpsskrin += 2;
-    story.innerText += "\nDu finner 2 førstehjelpsskrin.";
+    story.innerText += "\nDu finner 2 førstehjelpsskrin i sekken";
     await tid(4);
 
     player.ammoSekk += 1;
@@ -537,29 +544,39 @@ async function forestPathRight() {
   setGameImage("Bilder/jakttarn.png");
   story.innerText += "\n\nMellom granene reiser et gammelt jakttårn seg.";
   await tid(3);
-  story.innerText +=
-    "\n\nDu nærmer deg - en zombie krafser seg ut under trappa!";
+  story.innerText += "\n\nDu nærmer deg - en zombie kommer frem under trappa!";
   await tid(3);
+  setGameImage("Bilder3/zombievedtårnet.png");
 
-  zombie.hp = 9;
+  zombie.hp = 10;
   enableCombatButtons();
   story.innerText += "\n\nHva gjør du?";
 
   afterZombieDeathHandler = async () => {
-    story.innerText += "\n\nDet er stille. Du klatrer forsiktig opp i tårnet.";
+    story.innerText += "\n\nDet blir stille igjen.";
+    await tid(3);
+
+    story.innerText += "\n\nDu klatrer forsiktig opp i jakttårnet.";
+    await tid(5);
+
+    story.innerText += "\n\nDu finner en machete i en boks.";
+    await tid(4);
+    setGameImage("Bilder3/macheteITårnet.png");
+
+    pickUpMachete(13);
     await tid(4);
 
-    //skal legge til zommbie encounter her
-
-    //loot (bra loot)
-    const ammoFunnet = 5;
-    player.ammoSekk += ammoFunnet;
-    story.innerText += `\nI en metallboks ligger ${ammoFunnet} ammo.`;
-    story.innerText += `\nAmmo i sekken: ${player.ammoSekk}`;
-    await tid(5);
     story.innerText +=
-      "\n\nUtsikten er god, men ingenting annet nyttig. Du klatrer ned og drar tilbake.";
-    await tid(6);
+      "\n\nBladet er tungt og skarpt, den er i overraskende god stand";
+    await tid(5);
+
+    story.innerText +=
+      "\n\nUtsikten er god, men du finner ingenting annet av verdi.";
+    await tid(4);
+
+    story.innerText += "\n\nDu klatrer ned igjen og drar tilbake.";
+    await tid(5);
+
     finishEncounter();
   };
 }

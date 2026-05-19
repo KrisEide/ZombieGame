@@ -118,90 +118,86 @@ async function safeRoute() {
       story.innerText += "\n\nEt siste stykke venter.";
       await tid(4);
 
-      story.innerText += "\n\nVeien foran deg er stille - men ikke lenge";
-      await tid(5);
-
-      //bilde av zombie som kommer, første zombie etter hagla er funnet.
-      setGameImage("Bilder/firstZombieShotgun.png");
-      story.innerText += "\n\nEn zombie velter ut fra grøfta, rett foran deg..";
-      await tid(4);
-
-      story.innerText += "\n\nDu hever hagla, for første gang.";
-      await tid(3);
-      setGameImage("Bilder/firstZombieShotgun.png");
+      story.innerText += "\n\nVeien foran deg virker stille.";
       await tid(3);
 
-      // første zombie etter du fant hagla.
+      setGameImage("Bilder/firstZombieShotgun.png");
+      story.innerText += "\n\nSå eksploderer grøfta i bevegelse.";
+      await tid(3);
+
+      story.innerText += "\n\nEn zombie kaster seg ut rett foran deg.";
+      await tid(3);
+
+      story.innerText += "\n\nDu rekker bare å heve hagla.";
+      await tid(2);
+
       zombie.hp = 10;
       enableCombatButtons();
       story.innerText += "\n\nHva gjør du?";
+
       afterZombieDeathHandler = async () => {
-        await tid(7);
-        story.innerText +=
-          "\n\nDu kjenner slaget i skuldra. Hagla svarte brutalt - akkurat som forventet.";
-        await tid(5);
-
-        // --- Pusterom før neste zombie ---
-
-        story.innerText += "\n\nDu går videre langs motorveien.";
         await tid(4);
-        ("\n\nStillheten Kommer tilbake.");
+
+        story.innerText +=
+          "\n\nSmellet runger mellom bilvrakene. Du kjenner slaget i skuldra, men stopper ikke.";
         await tid(4);
 
         setGameImage("Bilder/motorvei_gårvidere.png");
-        story.innerText += "\n\nVind blåser løse papirark over asfalten.";
-        await tid(4);
+        story.innerText += "\n\nDu presser deg videre oppover motorveien.";
+        await tid(3);
+
         story.innerText +=
-          "\n\nDu tråkker over glasskår, lyden knaser under støvlene.";
-        await tid(5);
-        story.innerText +=
-          "\n\nAlt minner deg om hvor mange som aldri kom frem.";
-        await tid(5);
-        story.innerText +=
-          "\n\nEn veltet lastebil hviler kjevt ved siden av veien";
-        await tid(4);
-        ("\n\nStillheten brytes av lyder innenfra.");
+          "\n\nGlass knaser under støvlene. Skudd høres langt borte.";
         await tid(4);
 
-        story.innerText += "\n\nPlutselig velter en zombie frem,";
-        await tid(4);
+        story.innerText += "\n\nEn veltet lastebil sperrer deler av veien.";
+        await tid(3);
+
+        story.innerText += "\n\nNoe hamrer fra innsiden.";
+        await tid(2);
+
         setGameImage("Bilder/veltet_lastebil_zombie.png");
+        story.innerText += "\n\nEn zombie velter ut og stormer mot deg.";
+        await tid(3);
+
         zombie.hp = 10;
         enableCombatButtons();
-        await tid(4);
         story.innerText += "\n\nHva gjør du?";
-        afterZombieDeathHandler = async () => {
-          story.innerText += "\n\nDu trekker pusten og fortsetter, raskere nå.";
-          await tid(7);
 
-          story.innerText += "\n\nI horisonten reiser Safe-Zone seg.";
-          await tid(5);
+        afterZombieDeathHandler = async () => {
           story.innerText +=
-            "\n\nSkudd og skrik fyller luften. Du strammer grepet rundt hagla og øker tempoet.";
-          await tid(6);
+            "\n\nDu lar den falle bak deg og setter opp farten.";
+          await tid(4);
+
+          story.innerText += "\n\nSafe-Zone reiser seg i horisonten.";
+          await tid(4);
+
           story.innerText +=
-            "\n\nDu kommer frem. En massiv mur av tømmerstokker bundet sammen med stål.";
-          await tid(6);
+            "\n\nSkudd, skrik og metall mot treverk fyller luften.";
+          await tid(4);
+
+          story.innerText +=
+            "\n\nDu strammer grepet rundt hagla og løper mot porten.";
+          await tid(4);
+
           setGameImage("Bilder/safeZone_shotgun_first.png");
+          story.innerText +=
+            "\n\nZombier klorer desperat på barrikaden. Forsvarerne skyter fra muren.";
           await tid(5);
+
           story.innerText +=
-            "\n\nZombier klorer desperat på portene. Kroppene henger allerede i piggtråd langs veggen.";
-          await tid(7);
-          story.innerText +=
-            "\n\nPå innsiden ser du folk med rifler som fyrer ned mot mengden utenfor.";
-          await tid(6);
+            "\n\nDu kommer frem akkurat idet en av dem bryter ut av mengden.";
+          await tid(4);
 
           // ---------- KAMP VED PORTEN ---------
 
-          story.innerText +=
-            "\n\nEn av zombiene bryter gjennom rekken og stormer rett mot deg!";
-          await tid(4);
           story.innerText += "\n\nHva gjør du?";
           enableCombatButtons();
           zombie.hp = 10;
 
           //1 zombie død
           afterZombieDeathHandler = async () => {
+            setGameImage("Bilder3/ShotgunEnd1.png");
             disableCombatButtons();
             story.innerText +=
               "\n\nZombien ligger stille, men en ny kommer mot deg fra mengden!";
@@ -212,6 +208,7 @@ async function safeRoute() {
 
             // 2 zombier død
             afterZombieDeathHandler = async () => {
+              setGameImage("Bilder3/ShotgunEnd2.png");
               disableCombatButtons();
               story.innerText +=
                 "\n\nDe levende på innsiden skriker og skyter desperat ned i mengden.";
@@ -226,6 +223,7 @@ async function safeRoute() {
 
               // 3 zombier død
               afterZombieDeathHandler = async () => {
+                setGameImage("Bilder3/ShotgunEnd3.png");
                 disableCombatButtons();
                 story.innerText +=
                   "\n\nDu rykker hagla opp igjen. En til kommer , kjeven drypper av blod!";
@@ -236,6 +234,7 @@ async function safeRoute() {
 
                 // 4 zombier død
                 afterZombieDeathHandler = async () => {
+                  setGameImage("Bilder3/ShotgunEnd4.png");
                   disableCombatButtons();
                   story.innerText +=
                     "\n\nSkuddet dundrer. Du kjenner skuldra verke - men en til stormer rett mot deg!";
@@ -249,6 +248,7 @@ async function safeRoute() {
 
                   afterZombieDeathHandler = async () => {
                     disableCombatButtons();
+
                     story.innerText +=
                       "\n\nKruttrøyken henger i lufta. De siste faller foran deg.";
                     await tid(6);
@@ -256,6 +256,7 @@ async function safeRoute() {
                     story.innerText +=
                       "\n\nFra innsiden høres et rop: «Åpne portene - han er med oss!»";
                     await tid(6);
+                    setGameImage("Bilder3/ShotgunEnd5.png");
 
                     story.innerText +=
                       "\n\nPortene glir opp. Du krysser terskelen - blodig, men levende.";

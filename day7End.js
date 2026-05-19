@@ -169,6 +169,8 @@ async function day7TheEnd() {
         story.innerText += "\n\nDu går lenger frem i vraket, inn til cockpit.";
         await tid(4);
         story.innerText += "\n\nDu finner et kart.";
+        setGameImage("Bilder3/MapSafeZone.png");
+
         await tid(4);
         story.innerText += "\n\nSafe Zone er merket med en rød sirkel.";
         await tid(4);
