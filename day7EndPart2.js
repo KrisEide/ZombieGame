@@ -10,8 +10,6 @@ async function safeRoute() {
   await tid(4);
   story.innerText = "Du holder deg til ruten du fant.";
   await tid(5);
-  story.innerText += "\n\nFærre zombier, men det er tryggere.";
-  await tid(5);
   story.innerText +=
     "\n\nStemmen fra walkie-talkien kverner fortsatt i hodet ditt: Safe-Zone trenger hjelp.";
   await tid(6);
@@ -33,7 +31,7 @@ async function safeRoute() {
   setGameImage("Bilder/zombie_sti.png");
   story.innerText +=
     "\n\nEn enslig zombie vakler frem fra skyggene. Blodet renner fra kjeven.";
-  zombie.hp = 12; // 12? 14?
+  zombie.hp = 10; // 12? 14? 10.
   await tid(4);
   enableCombatButtons();
   story.innerText += "\n\nHva gjør du?";

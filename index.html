@@ -143,7 +143,7 @@
     let knifeGoneWarning = false;
     let knifeInstakillTriggered = false;
     let hasFlameThrower = false;
-    let dag = 7;
+    let dag = 1;
 
     story.innerText = "Det kommer en zombie mot deg i det fjerne, hva gjør du?";
 
@@ -352,7 +352,7 @@
       if (player.hasMachete) {
         weaponIcon.src = "Bilder3/machete.png";
         weaponIcon.alt = "machete";
-      } else if (!player.hasKnife) {
+      } else if (!usingMachete && !player.hasKnife) {
         weaponIcon.src = "Bilder/fist.png";
         weaponIcon.alt = "knyttneve";
       } else {
@@ -408,6 +408,12 @@
       player.hasMachete = true;
       player.macheteUses = uses;
 
+      updateCloseCombatIcon();
+    }
+
+    function breakMachete() {
+      player.hasMachete = false;
+      player.macheteUses = 0;
       updateCloseCombatIcon();
     }
 
@@ -616,13 +622,14 @@
 
       const usingMachete = player.hasMachete;
 
-      if (!player.hasKnife) {
-        if (!usingMachete && !knifeGoneWarning) {
+      if (!usingMachete && !player.hasKnife) {
+        if (!knifeGoneWarning) {
           story.innerText += "\n\nDu strammer knyttnevene. Det er alt du har.";
           updateCloseCombatIcon();
           knifeGoneWarning = true;
           await tid(2);
         }
+
         fistFight();
         return;
       }
@@ -663,7 +670,20 @@
           "\n\nI nærkampens kaos finner du en åpning og planter kniven rett i hodet på zombien.";
         zombie.hp = 0;
         await tid(5);
+        if (usingMachete) {
+          player.macheteUses -= 2;
+          if (usingMachete && player.macheteUses <= 0) {
+            story.innerText += "\n\nMacheten knekker i støtet.";
+            breakMachete();
+            updateCloseCombatIcon();
+            checkZombieDeath();
+            return;
+          }
+        }
+
+        // -------------------------------------------
         player.knifeUses -= 3;
+
         if (player.knifeUses > 0) {
           story.innerText +=
             "\n\nDu drar ut kniven fra skallen på zombien,  bladet er bøyd og fullt av hakk.";
@@ -706,9 +726,7 @@
       await tid(2);
       if (usingMachete && player.macheteUses <= 0) {
         story.innerText += "\n\nMacheten er for ødelagt til å brukes mer.";
-        player.hasMachete = false;
-        player.macheteUses = 0;
-        updateCloseCombatIcon();
+        breakMachete();
         await tid(2);
       }
 

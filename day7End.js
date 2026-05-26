@@ -94,11 +94,10 @@ async function day7TheEnd() {
     await tid(3);
     story.innerText += "\n\nDet er ute av kontroll.";
     await tid(5);
-    story.innerText += "\n\nDet skjer.";
+    story.innerText += "\n\nEn skjærende metallisk lyd river gjennom luften.";
     await tid(3);
-    story.innerText += "\n\nEn skarp skrening, en skrikende metalllyd.";
-    await tid(3);
-    story.innerText += "\n\nog så et smell som løfter støv og varme.";
+    story.innerText +=
+      "\n\nog så et smell som sendte en sky av støv opp rundt vraket";
     await tid(4);
     story.innerText += "\n\nDu stanser. Målløs. Din eneste redning brenner.";
     await tid(5);
@@ -112,7 +111,7 @@ async function day7TheEnd() {
     story.innerText += "\n\nDu går nærmere vraket.";
     await tid(3);
     setGameImage("Bilder/helikopter6.png");
-    story.innerText += "\n\nTo skillekser i flammer vakler seg ut fra vraket.";
+    story.innerText += "\n\nTo skikkelser i flammer vakler seg ut fra vraket.";
     await tid(6);
 
     story.innerText += "\n\nPilotene.";
