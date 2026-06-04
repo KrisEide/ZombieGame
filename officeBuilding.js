@@ -9,7 +9,7 @@ async function officeBuilding() {
   currentEncounterLocation = "officeBuilding";
   disableCombatButtons();
 
-  setGameImage("Bilder/office12.png");
+  setGameImage("Bilder/Office12.png");
   story.innerText +=
     "\nDu går mot kontorbygget for å lete etter forsyninger...";
   await tid(5);

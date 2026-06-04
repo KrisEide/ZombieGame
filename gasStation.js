@@ -41,8 +41,8 @@ function supplyRun() {
 
   if (!visitedSupplyRunPlace.office) {
     choices.push({
-      image: "Bilder/office12.png",
-      title: "Ett gammelt kontorbygg",
+      image: "Bilder/Office12.png",
+      title: "Office building",
       action: () => {
         visitedSupplyRunPlace.office = true;
         officeBuilding();
