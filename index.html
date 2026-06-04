@@ -11,6 +11,12 @@
     <div id="game-menu">
       <div id="imageContainer">
         <img src="Bilder/Gammeltpapir.webp" alt="Bakgrunnsbilde" />
+        <button
+          id="hiddenStoryModeButton"
+          type="button"
+          aria-label="Hidden story mode"
+        ></button>
+
         <div id="startGameText">
           Det har gått over ett år siden alt kollapset. Byene er tomme, zombiene
           vandrer i gatene. Du har overlevd i stillhet, men nå er maten borte -
@@ -128,6 +134,13 @@
 
         document.getElementById("startGame").style.display = "flex";
         document.getElementById("game-menu").style.display = "none";
+
+        document
+          .getElementById("hiddenStoryModeButton")
+          .addEventListener("click", function (event) {
+            event.stopPropagation();
+            activateHiddenStoryMode();
+          });
       });
 
     /* --------------------------------------------------------- */
@@ -136,6 +149,7 @@
     const day = document.getElementById("whatDay");
     const gameImg = document.getElementById("gameImage");
 
+    let hiddenStoryMode = false;
     let isItGameOver = false;
     let afterZombieDeathHandler = null;
     let currentEncounterLocation = null;
@@ -191,6 +205,25 @@
         return this._hp;
       },
     };
+
+    function activateHiddenStoryMode() {
+      if (hiddenStoryMode) return;
+
+      hiddenStoryMode = true;
+
+      player.ammoSekk += 8;
+      player.førstehjelpsskrin += 2;
+      player.extraKnives.push(9);
+
+      console.log("Hidden story mode aktivert!");
+      console.log("Ammo i sekk:", player.ammoSekk);
+      console.log("Førstehjelpsskrin:", player.førstehjelpsskrin);
+      console.log("Reservekniver:", player.extraKnives.length);
+
+      if (typeof updateStatusPanel === "function") {
+        updateStatusPanel();
+      }
+    }
 
     function updateHpBars() {
       document.querySelector("#playerHpBar .fill").style.width =
@@ -352,7 +385,7 @@
       if (player.hasMachete) {
         weaponIcon.src = "Bilder3/machete.png";
         weaponIcon.alt = "machete";
-      } else if (!usingMachete && !player.hasKnife) {
+      } else if (!player.hasKnife) {
         weaponIcon.src = "Bilder/fist.png";
         weaponIcon.alt = "knyttneve";
       } else {
@@ -666,33 +699,48 @@
 
       if (knifeInstakillChance > 0 && instaKillRoll < knifeInstakillChance) {
         knifeInstakillTriggered = true;
+
+        if (usingMachete) {
+          story.innerText +=
+            "\n\nI nærkampens kaos finner du en åpning og hugger macheten rett gjennom zombien.";
+          zombie.hp = 0;
+          await tid(5);
+
+          player.macheteUses -= 2;
+
+          if (player.macheteUses <= 0) {
+            story.innerText += "\n\nMacheten knekker i støtet.";
+            breakMachete();
+            checkZombieDeath();
+            return;
+          }
+
+          story.innerText +=
+            "\n\nDu river macheten løs igjen. Bladet har fått flere hakk.";
+          await tid(4);
+
+          updateCloseCombatIcon();
+          checkZombieDeath();
+          return;
+        }
+
         story.innerText +=
           "\n\nI nærkampens kaos finner du en åpning og planter kniven rett i hodet på zombien.";
         zombie.hp = 0;
         await tid(5);
-        if (usingMachete) {
-          player.macheteUses -= 2;
-          if (usingMachete && player.macheteUses <= 0) {
-            story.innerText += "\n\nMacheten knekker i støtet.";
-            breakMachete();
-            updateCloseCombatIcon();
-            checkZombieDeath();
-            return;
-          }
-        }
 
-        // -------------------------------------------
         player.knifeUses -= 3;
 
         if (player.knifeUses > 0) {
           story.innerText +=
-            "\n\nDu drar ut kniven fra skallen på zombien,  bladet er bøyd og fullt av hakk.";
+            "\n\nDu drar ut kniven fra skallen på zombien, bladet er bøyd og fullt av hakk.";
           await tid(4);
           story.innerText += "\n\nDen funker enda, men du bør se etter en ny.";
           await tid(4);
-        } else if (player.knifeUses <= 0) {
-          story.innerText += "\n\nMen kniven brekker i støtet..";
+        } else {
+          story.innerText += "\n\nMen kniven brekker i støtet.";
           await tid(4);
+
           if (player.extraKnives.length > 0) {
             const nextKnife = player.extraKnives.shift();
             player.knifeUses = nextKnife;
@@ -709,7 +757,6 @@
         }
 
         updateCloseCombatIcon();
-
         checkZombieDeath();
         return;
       }
