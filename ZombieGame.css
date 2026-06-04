@@ -558,7 +558,7 @@ button:hover:not(:disabled) img {
   opacity: 0;
 
   z-index: 20;
-  cursor: default;
+  cursor: pointer;
 }
 
 #hiddenStoryModeButton:focus {

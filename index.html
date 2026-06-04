@@ -134,13 +134,13 @@
 
         document.getElementById("startGame").style.display = "flex";
         document.getElementById("game-menu").style.display = "none";
+      });
 
-        document
-          .getElementById("hiddenStoryModeButton")
-          .addEventListener("click", function (event) {
-            event.stopPropagation();
-            activateHiddenStoryMode();
-          });
+    document
+      .getElementById("hiddenStoryModeButton")
+      .addEventListener("click", function (event) {
+        event.stopPropagation();
+        activateHiddenStoryMode();
       });
 
     /* --------------------------------------------------------- */
